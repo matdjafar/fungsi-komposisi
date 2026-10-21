@@ -1,0 +1,2719 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Ekspedisi Pulau Fungsi – Gim Edukasi Matematika Kelas XI</title>
+
+  <!-- Google Fonts: Plus Jakarta Sans untuk keterbacaan tinggi -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+
+  <!-- Konfigurasi MathJax untuk merender rumus matematika -->
+  <script>
+    window.MathJax = {
+      tex: {
+        inlineMath: [['\\(', '\\)']],
+        displayMath: [['\\[', '\\]']]
+      },
+      svg: { fontCache: 'global' }
+    };
+  </script>
+  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+  <style>
+    /* ==========================================================================
+       VARIABEL CSS & TEMA VISUAL (High Contrast Nusantara Adventure)
+       ========================================================================== */
+    :root {
+      --bg-dark: #0f172a;
+      --bg-card: #1e293b;
+      --bg-surface: #334155;
+      --text-main: #f8fafc;
+      --text-muted: #cbd5e1;
+      --primary: #f59e0b;       /* Emas Nusantara */
+      --primary-hover: #d97706;
+      --accent: #10b981;        /* Zamrud Tropis */
+      --accent-hover: #059669;
+      --info: #38bdf8;          /* Biru Laut */
+      --warning: #fbbf24;
+      --danger: #f43f5e;
+      --border: #475569;
+      --radius-lg: 16px;
+      --radius-md: 12px;
+      --shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      background: radial-gradient(circle at top, #1e3a8a 0%, #0f172a 70%);
+      color: var(--text-main);
+      font-size: 16px;
+      line-height: 1.6;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow-x: hidden;
+    }
+
+    /* ==========================================================================
+       HEADER & BAR STATUS ATAS
+       ========================================================================== */
+    .top-bar {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: rgba(15, 23, 42, 0.92);
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid var(--border);
+      padding: 0.6rem 1rem;
+      display: flex;
+       flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .brand-title {
+      font-weight: 800;
+      font-size: 1.1rem;
+      color: var(--primary);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .hud-stats {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      flex-wrap: wrap;
+    }
+
+    .hud-pill {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      padding: 0.35rem 0.75rem;
+      border-radius: 999px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+
+    .sync-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: var(--accent);
+      display: inline-block;
+    }
+    .sync-dot.pending { background: var(--warning); animation: pulse 1.2s infinite; }
+    .sync-dot.offline { background: var(--danger); }
+
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); opacity: 1; }
+      50% { transform: scale(1.3); opacity: 0.6; }
+    }
+
+    /* ==========================================================================
+       KONTAINER UTAMA & LAYAR (SCREENS)
+       ========================================================================== */
+    .app-container {
+      width: 100%;
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 1.25rem 1rem 3rem;
+      flex: 1;
+    }
+
+    .screen {
+      display: none;
+      animation: fadeIn 0.35s ease;
+    }
+    .screen.active {
+      display: block;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 1.5rem;
+      margin-bottom: 1.25rem;
+      box-shadow: var(--shadow);
+    }
+
+    h1 { font-size: 1.75rem; font-weight: 800; margin-bottom: 0.75rem; color: #fff; }
+    h2 { font-size: 1.4rem; font-weight: 700; margin-bottom: 0.75rem; color: var(--primary); }
+    h3 { font-size: 1.15rem; font-weight: 700; margin-bottom: 0.5rem; color: var(--info); }
+    p  { margin-bottom: 0.85rem; color: var(--text-muted); }
+
+    /* ==========================================================================
+       TOMBOL & INPUT (Target sentuh minimal 44px untuk HP/Smartboard)
+       ========================================================================== */
+    .btn {
+      min-height: 46px;
+      padding: 0.65rem 1.25rem;
+      border-radius: var(--radius-md);
+      font-family: inherit;
+      font-size: 1rem;
+      font-weight: 700;
+      border: none;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      text-decoration: none;
+    }
+
+    .btn:active { transform: scale(0.98); }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--primary), #ea580c);
+      color: #0f172a;
+      box-shadow: 0 4px 14px rgba(245, 158, 11, 0.35);
+    }
+    .btn-primary:hover { filter: brightness(1.08); }
+
+    .btn-accent {
+      background: linear-gradient(135deg, var(--accent), #059669);
+      color: #0f172a;
+    }
+
+    .btn-secondary {
+      background: var(--bg-surface);
+      color: var(--text-main);
+      border: 1px solid var(--border);
+    }
+    .btn-secondary:hover { background: #475569; }
+
+    .btn-sm {
+      min-height: 40px;
+      padding: 0.4rem 0.85rem;
+      font-size: 0.9rem;
+    }
+
+    .btn-block { width: 100%; }
+
+    .form-group {
+      margin-bottom: 1.15rem;
+    }
+
+    label {
+      display: block;
+      font-weight: 600;
+      margin-bottom: 0.4rem;
+      color: var(--text-main);
+    }
+
+    input[type="text"],
+    input[type="number"],
+    input[type="password"],
+    select,
+    textarea {
+      width: 100%;
+      min-height: 46px;
+      padding: 0.65rem 0.9rem;
+      border-radius: var(--radius-md);
+      border: 2px solid var(--border);
+      background: #0f172a;
+      color: #fff;
+      font-family: inherit;
+      font-size: 1rem;
+    }
+
+    input:focus, select:focus, textarea:focus {
+      outline: none;
+      border-color: var(--primary);
+    }
+
+    /* ==========================================================================
+       GRID KARAKTER
+       ========================================================================== */
+    .char-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+      gap: 1rem;
+      margin: 1rem 0 1.5rem;
+    }
+
+    .char-card {
+      background: #0f172a;
+      border: 2px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 1rem;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      text-align: left;
+    }
+
+    .char-card:hover {
+      border-color: var(--info);
+      transform: translateY(-2px);
+    }
+
+    .char-card.selected {
+      border-color: var(--primary);
+      background: rgba(245, 158, 11, 0.12);
+      box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.25);
+    }
+
+    .char-avatar {
+      font-size: 2.5rem;
+      margin-bottom: 0.4rem;
+      display: inline-block;
+    }
+
+    /* ==========================================================================
+       PETA DUNIA (WORLD MAP)
+       ========================================================================== */
+    .map-wrapper {
+      background: linear-gradient(180deg, #0c4a6e 0%, #082f49 100%);
+      border: 2px solid #38bdf8;
+      border-radius: var(--radius-lg);
+      padding: 1.25rem;
+      position: relative;
+      overflow: hidden;
+      margin-bottom: 1.25rem;
+    }
+
+    .zones-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 1rem;
+      position: relative;
+      z-index: 2;
+    }
+
+    .zone-node {
+      background: rgba(15, 23, 42, 0.9);
+      border: 2px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 1rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      transition: all 0.25s ease;
+    }
+
+    .zone-node.unlocked {
+      border-color: var(--info);
+      cursor: pointer;
+    }
+    .zone-node.unlocked:hover {
+      border-color: var(--primary);
+      transform: translateY(-3px);
+    }
+
+    .zone-node.completed {
+      border-color: var(--accent);
+      background: rgba(16, 185, 129, 0.12);
+    }
+
+    .zone-node.locked {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
+    .stars-display {
+      color: var(--warning);
+      font-size: 1.2rem;
+      letter-spacing: 2px;
+    }
+
+    /* ==========================================================================
+       MESIN FUNGSI INTERAKTIF & DISCOVERY STEPS
+       ========================================================================== */
+    .step-indicator {
+      display: flex;
+      gap: 0.35rem;
+      margin-bottom: 1.25rem;
+      overflow-x: auto;
+      padding-bottom: 0.3rem;
+    }
+
+    .step-pill {
+      flex: 1;
+      min-width: 95px;
+      text-align: center;
+      padding: 0.45rem 0.5rem;
+      background: #0f172a;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: var(--text-muted);
+    }
+
+    .step-pill.active {
+      background: var(--primary);
+      color: #0f172a;
+      border-color: var(--primary);
+    }
+
+    .step-pill.done {
+      background: rgba(16, 185, 129, 0.2);
+      border-color: var(--accent);
+      color: var(--accent);
+      cursor: pointer;
+    }
+
+    .step-pill.done:hover {
+      filter: brightness(1.2);
+    }
+
+    .step-nav-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      margin-top: 1.25rem;
+      padding-top: 1rem;
+      border-top: 1px solid var(--border);
+    }
+
+    .machine-box {
+      background: #0f172a;
+      border: 2px dashed var(--info);
+      border-radius: var(--radius-md);
+      padding: 1.2rem;
+      margin: 1rem 0;
+      text-align: center;
+    }
+
+    .machine-pipeline {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: center;
+      gap: 0.65rem;
+      margin: 1rem 0;
+    }
+
+    .machine-unit {
+      background: linear-gradient(145deg, #1e293b, #334155);
+      border: 2px solid var(--primary);
+      border-radius: 12px;
+      padding: 0.75rem 1rem;
+      min-width: 130px;
+      font-weight: 700;
+    }
+
+    .machine-arrow {
+      font-size: 1.5rem;
+      color: var(--accent);
+      font-weight: 800;
+    }
+
+    /* ==========================================================================
+       OPSI PILIHAN GANDA, DRAG-ORDER & UMPAN BALIK GROWTH MINDSET
+       ========================================================================== */
+    .options-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0.65rem;
+      margin: 1rem 0;
+    }
+
+    .option-btn {
+      width: 100%;
+      min-height: 48px;
+      text-align: left;
+      padding: 0.8rem 1rem;
+      background: #0f172a;
+      border: 2px solid var(--border);
+      border-radius: var(--radius-md);
+      color: var(--text-main);
+      font-family: inherit;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+
+    .option-btn:hover {
+      border-color: var(--info);
+      background: rgba(56, 189, 248, 0.08);
+    }
+
+    .option-btn.selected {
+      border-color: var(--primary);
+      background: rgba(245, 158, 11, 0.15);
+    }
+
+    .feedback-box {
+      padding: 1rem;
+      border-radius: var(--radius-md);
+      margin-top: 1rem;
+      border-left: 5px solid var(--info);
+      background: rgba(15, 23, 42, 0.85);
+    }
+
+    .feedback-box.success {
+      border-left-color: var(--accent);
+      background: rgba(16, 185, 129, 0.15);
+    }
+
+    .feedback-box.retry {
+      border-left-color: var(--warning);
+      background: rgba(245, 158, 11, 0.15);
+    }
+
+    .hint-box {
+      background: rgba(56, 189, 248, 0.12);
+      border: 1px solid var(--info);
+      border-radius: var(--radius-md);
+      padding: 0.85rem 1rem;
+      margin-top: 0.75rem;
+      font-size: 0.95rem;
+    }
+
+    .discovery-book {
+      background: linear-gradient(135deg, rgba(245, 158, 11, 0.18), rgba(16, 185, 129, 0.18));
+      border: 2px solid var(--primary);
+      border-radius: var(--radius-md);
+      padding: 1.25rem;
+      margin: 1rem 0;
+    }
+
+    .npc-dialog {
+      display: flex;
+      gap: 0.9rem;
+      align-items: flex-start;
+      background: rgba(15, 23, 42, 0.8);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 1rem;
+      margin-bottom: 1rem;
+    }
+
+    .npc-avatar {
+      font-size: 2.2rem;
+      background: var(--bg-surface);
+      width: 54px;
+      height: 54px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .badge-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.6rem;
+      margin-top: 0.5rem;
+    }
+
+    .badge-item {
+      background: #0f172a;
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      padding: 0.35rem 0.85rem;
+      font-size: 0.85rem;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      opacity: 0.45;
+    }
+
+    .badge-item.earned {
+      opacity: 1;
+      border-color: var(--primary);
+      background: rgba(245, 158, 11, 0.18);
+      color: #fff;
+      font-weight: 700;
+    }
+
+    /* ==========================================================================
+       FOOTER & SERTIFIKAT CETAK (PRINT CSS)
+       ========================================================================== */
+    footer {
+      background: #090d16;
+      border-top: 1px solid var(--border);
+      padding: 1.2rem 1rem;
+      text-align: center;
+      font-size: 0.9rem;
+      color: var(--text-muted);
+      margin-top: auto;
+    }
+
+    .certificate-box {
+      background: #fff;
+      color: #0f172a;
+      border: 8px double #d97706;
+      border-radius: var(--radius-md);
+      padding: 2rem;
+      text-align: center;
+      margin: 1.5rem 0;
+    }
+    .certificate-box h2 { color: #b45309; font-size: 1.8rem; }
+    .certificate-box p { color: #334155; }
+
+    @media print {
+      body { background: #fff; color: #000; }
+      .top-bar, footer, .no-print { display: none !important; }
+      .app-container { max-width: 100%; padding: 0; }
+      .card { border: none; box-shadow: none; background: transparent; }
+      .certificate-box { border: 6px double #000; page-break-inside: avoid; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ======================= HEADER / HUD ======================= -->
+  <header class="top-bar">
+    <div class="brand-title">
+      <span>🧭</span>
+      <span>Ekspedisi Pulau Fungsi</span>
+    </div>
+
+    <div class="hud-stats">
+      <div class="hud-pill" id="hudPlayer" style="display:none;">
+        <span id="hudAvatar">🧑‍🚀</span>
+        <span id="hudName">Penjelajah</span>
+      </div>
+      <div class="hud-pill" id="hudEnergyWrap" style="display:none;" title="Energi Belajar (bisa dipulihkan kapan saja)">
+        <span>⚡</span>
+        <span id="hudEnergy">5/5</span>
+      </div>
+      <div class="hud-pill" id="hudStarsWrap" style="display:none;" title="Total Bintang Penemuan">
+        <span>⭐</span>
+        <span id="hudStars">0</span>
+      </div>
+      <div class="hud-pill" title="Status Sinkronisasi Spreadsheet">
+        <span class="sync-dot" id="syncDot"></span>
+        <span id="syncText">Siap</span>
+      </div>
+      <button class="btn btn-secondary btn-sm" id="btnSwitchAccount" style="display:none;" onclick="logoutStudentAccount()" title="Ganti Akun Siswa">
+        🚪 Ganti Akun
+      </button>
+      <button class="btn btn-secondary btn-sm" id="btnAudioToggle" onclick="toggleMute()" aria-label="Pengaturan Suara">
+        🔊 Suara
+      </button>
+    </div>
+  </header>
+
+  <!-- ======================= KONTAINER UTAMA ======================= -->
+  <main class="app-container">
+
+    <!-- 1. LAYAR MASUK -->
+    <section id="screen-login" class="screen active">
+      <div class="card">
+        <span style="background:rgba(245,158,11,0.2); color:var(--primary); padding:0.25rem 0.75rem; border-radius:99px; font-weight:700; font-size:0.85rem;">
+          Matematika SMA Kelas XI • Fase F (Kurikulum Merdeka)
+        </span>
+        <h1 style="margin-top:0.75rem;">Misteri Rantai Mesin di Pulau Fungsi</h1>
+        <p>
+          Selamat datang, Penjelajah Muda! Bersiaplah menemukan sendiri rahasia <strong>Fungsi Komposisi</strong> melalui eksperimen mesin berantai, teka-teki detektif, dan petualangan kontekstual Nusantara.
+        </p>
+
+        <div class="form-group">
+          <label for="inputNama">Pilih Nama Siswa (Kelas XI) <span style="color:var(--danger)">*</span></label>
+          <select id="inputNama">
+            <option value="">-- Klik untuk Memilih Namamu --</option>
+          </select>
+          <small style="color:var(--text-muted); display:block; margin-top:0.35rem;">
+            💡 <strong>Info Akun:</strong> Cukup pilih namamu dari daftar di atas untuk <strong>masuk atau melanjutkan progresmu otomatis</strong> kapan saja tanpa perlu mengetik.
+          </small>
+        </div>
+
+        <div id="savedAccountsWrap" style="display:none; margin-bottom:1.15rem; background:#0f172a; padding:0.85rem 1rem; border-radius:var(--radius-md); border:1px solid var(--border);">
+          <div style="font-size:0.88rem; font-weight:700; color:var(--info); margin-bottom:0.5rem;">👤 Lanjutkan Akun Tersimpan di Perangkat Ini:</div>
+          <div id="savedAccountsList" style="display:flex; flex-wrap:wrap; gap:0.5rem;"></div>
+        </div>
+
+        <div id="loginError" class="feedback-box retry" style="display:none; margin-bottom:1rem;"></div>
+
+        <div style="display:flex; flex-wrap:wrap; gap:0.75rem; justify-content:space-between; align-items:center;">
+          <button class="btn btn-primary" id="btnStartAdventure" onclick="handleStartAdventure()">
+            🚀 Masuk / Lanjutkan Petualangan
+          </button>
+          <button class="btn btn-secondary btn-sm" onclick="openTeacherDashboard()">
+            🔐 Dasbor Guru
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- 2. LAYAR PILIH KARAKTER -->
+    <section id="screen-character" class="screen">
+      <div class="card">
+        <h2>Pilih Karakter Penjelajahmu</h2>
+        <p>Setiap karakter memiliki kekuatan sikap belajar (<em>Growth Mindset</em>) yang akan menemanimu di setiap zona.</p>
+
+        <div class="char-grid" id="charGrid"></div>
+
+        <div style="display:flex; justify-content:space-between; gap:0.75rem;">
+          <button class="btn btn-secondary" onclick="showScreen('screen-login')">⬅️ Kembali</button>
+          <button class="btn btn-primary" onclick="confirmCharacter()">Pilih & Lanjutkan ➡️</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- 3. LAYAR SELAMAT DATANG & PANDUAN -->
+    <section id="screen-welcome" class="screen">
+      <div class="card">
+        <div class="npc-dialog">
+          <div class="npc-avatar" id="welcomeCharAvatar">🧭</div>
+          <div>
+            <h2 id="welcomeTitle" style="margin-bottom:0.25rem;">Halo, Penjelajah!</h2>
+            <p id="welcomeTrait" style="margin-bottom:0;"></p>
+          </div>
+        </div>
+
+        <h3>🎯 Apa yang Akan Kamu Kuasai?</h3>
+        <ul style="margin: 0 0 1rem 1.25rem; color: var(--text-muted);">
+          <li>Menemukan sendiri konsep komposisi fungsi \((f \circ g)(x) = f(g(x))\) dari rantai mesin nyata.</li>
+          <li>Menentukan nilai dan aturan fungsi komposisi dengan tepat.</li>
+          <li>Membuktikan sifat-sifat komposisi fungsi (apakah boleh tukar urutan?) serta peran fungsi identitas.</li>
+          <li>Menemukan fungsi tersembunyi jika hasil komposisinya sudah diketahui.</li>
+          <li>Menyelesaikan masalah nyata di sekitar kita (produksi Karawo, diskon bertahap, hingga perhitungan zakat/infak).</li>
+        </ul>
+
+        <h3>🕹️ Aturan Main di Pulau Fungsi</h3>
+        <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(200px,1fr)); gap:0.75rem; margin-bottom:1rem;">
+          <div style="background:#0f172a; padding:0.85rem; border-radius:10px; border:1px solid var(--border);">
+            <strong>⚡ Energi Tanpa Hukuman</strong>
+            <p style="font-size:0.9rem; margin:0.3rem 0 0;">Kamu punya 5 Energi. Jika berkurang, kamu bisa memulihkannya kapan saja dengan mengulas petunjuk konsep!</p>
+          </div>
+          <div style="background:#0f172a; padding:0.85rem; border-radius:10px; border:1px solid var(--border);">
+            <strong>💡 Petunjuk 3 Tingkat</strong>
+            <p style="font-size:0.9rem; margin:0.3rem 0 0;">Meminta bantuan adalah strategi cerdas! Tersedia Isyarat, Langkah Awal, hingga Contoh Serupa.</p>
+          </div>
+          <div style="background:#0f172a; padding:0.85rem; border-radius:10px; border:1px solid var(--border);">
+            <strong>🏅 Lencana Usaha</strong>
+            <p style="font-size:0.9rem; margin:0.3rem 0 0;">Kami menghargai ketekunanmu mencoba ulang dan menemukan pola, bukan sekadar cepat selesai.</p>
+          </div>
+        </div>
+
+        <div class="discovery-book" style="text-align:center;">
+          <strong style="font-size:1.1rem; color:var(--primary);">🌟 Prinsip Utama Pulau Fungsi:</strong>
+          <p style="margin:0.35rem 0 0; color:#fff; font-weight:600;">
+            "Di dunia ini, salah itu bukan akhir, tapi petunjuk menuju penemuan baru!"
+          </p>
+        </div>
+
+        <button class="btn btn-primary btn-block" onclick="startOpeningStory()">
+          📖 Buka Kisah Pulau Fungsi
+        </button>
+      </div>
+    </section>
+
+    <!-- 4. LAYAR NARASI PEMBUKA ALA GIM -->
+    <section id="screen-story" class="screen">
+      <div class="card">
+        <h2>📜 Kisah di Pelabuhan Hulontalo</h2>
+
+        <!-- Ilustrasi SVG Peta/Mesin Pulau Fungsi -->
+        <div style="background:#082f49; border-radius:12px; padding:1rem; margin-bottom:1rem; text-align:center; border:1px solid #38bdf8;">
+          <svg viewBox="0 0 600 160" style="width:100%; max-height:160px;">
+            <rect width="600" height="160" fill="#082f49" rx="10"/>
+            <!-- Pulau & Gunung -->
+            <path d="M40,140 Q150,40 280,140 Z" fill="#065f46" />
+            <path d="M220,140 Q360,30 520,140 Z" fill="#047857" />
+            <!-- Mesin 1 & Mesin 2 -->
+            <rect x="130" y="75" width="90" height="50" rx="8" fill="#1e293b" stroke="#f59e0b" stroke-width="3"/>
+            <text x="175" y="105" fill="#f8fafc" font-size="14" font-weight="bold" text-anchor="middle">MESIN g</text>
+            <!-- Jembatan Putus -->
+            <line x1="225" y1="100" x2="275" y2="90" stroke="#f43f5e" stroke-width="4" stroke-dasharray="6,4"/>
+            <text x="300" y="75" fill="#fbbf24" font-size="18" font-weight="bold" text-anchor="middle">⚡ TERPUTUS!</text>
+            <line x1="325" y1="90" x2="375" y2="100" stroke="#f43f5e" stroke-width="4" stroke-dasharray="6,4"/>
+            <!-- Mesin 2 -->
+            <rect x="380" y="75" width="90" height="50" rx="8" fill="#1e293b" stroke="#10b981" stroke-width="3"/>
+            <text x="425" y="105" fill="#f8fafc" font-size="14" font-weight="bold" text-anchor="middle">MESIN f</text>
+          </svg>
+        </div>
+
+        <div class="npc-dialog">
+          <div class="npc-avatar">👳‍♂️</div>
+          <div>
+            <strong style="color:var(--primary);">Tetua Hulontalo (Penjaga Pulau Fungsi)</strong>
+            <p id="typewriterText" style="color:#fff; min-height:95px; margin-top:0.35rem;"></p>
+          </div>
+        </div>
+
+        <div style="display:flex; justify-content:space-between; flex-wrap:wrap; gap:0.75rem;">
+          <button class="btn btn-secondary btn-sm" onclick="skipTypewriter()">⏩ Tampilkan Semua Teks</button>
+          <button class="btn btn-primary" onclick="enterWorldMap()">🗺️ Buka Peta Dunia</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- 5. LAYAR PETA DUNIA -->
+    <section id="screen-map" class="screen">
+      <div class="card">
+        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:0.75rem; margin-bottom:1rem;">
+          <div>
+            <h2 style="margin-bottom:0.2rem;">🗺️ Peta Ekspedisi Pulau Fungsi</h2>
+            <p style="margin-bottom:0;">Selesaikan setiap zona secara berurutan untuk menyalakan kembali seluruh Mesin Penghubung!</p>
+          </div>
+          <div style="display:flex; gap:0.5rem;">
+            <button class="btn btn-secondary btn-sm" onclick="restoreEnergyModal()">⚡ Pulihkan Energi</button>
+            <button class="btn btn-secondary btn-sm" onclick="flushOfflineQueue()">☁️ Sinkronkan Data</button>
+          </div>
+        </div>
+
+        <!-- Bar Progres Keseluruhan -->
+        <div style="background:#0f172a; border-radius:99px; height:18px; width:100%; overflow:hidden; margin-bottom:1.25rem; border:1px solid var(--border);">
+          <div id="mapProgressBar" style="background:linear-gradient(90deg, var(--accent), var(--primary)); height:100%; width:0%; transition:width 0.4s ease;"></div>
+        </div>
+
+        <!-- Peta Interaktif 6 Zona -->
+        <div class="map-wrapper">
+          <div class="zones-grid" id="zonesGrid"></div>
+        </div>
+
+        <!-- Koleksi Lencana Usaha -->
+        <div style="background:#0f172a; padding:1rem; border-radius:var(--radius-md); border:1px solid var(--border);">
+          <h3 style="margin-bottom:0.3rem;">🏅 Koleksi Lencana Usaha & Growth Mindset</h3>
+          <p style="font-size:0.9rem; margin-bottom:0.5rem;">Lencana diberikan atas ketekunan, keberanian mencoba, dan ketelitianmu menemukan konsep.</p>
+          <div class="badge-grid" id="badgeContainer"></div>
+        </div>
+
+        <div id="finalScreenBtnWrap" style="margin-top:1.25rem; display:none;">
+          <button class="btn btn-accent btn-block" onclick="showFinalCertificate()">
+            🎓 Lihat Rangkuman Akhir & Cetak Sertifikat Penjelajah
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- 6. LAYAR ZONA PERMAINAN (DISCOVERY LEARNING 6 TAHAP) -->
+    <section id="screen-zone" class="screen">
+      <div class="card">
+        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:0.5rem; margin-bottom:0.75rem;">
+          <button class="btn btn-secondary btn-sm" onclick="enterWorldMap()">⬅️ Kembali ke Peta</button>
+          <span id="zoneHeaderBadge" style="font-weight:700; color:var(--primary);">Zona 1</span>
+        </div>
+
+        <h2 id="zoneTitle">Judul Zona</h2>
+
+        <!-- Indikator 6 Tahap Discovery Learning -->
+        <div class="step-indicator" id="stepIndicator"></div>
+
+        <!-- Kontainer Dinamis Isi Tahap -->
+        <div id="zoneStepContent"></div>
+      </div>
+    </section>
+
+    <!-- 7. LAYAR AKHIR & SERTIFIKAT -->
+    <section id="screen-certificate" class="screen">
+      <div class="card">
+        <div class="no-print" style="display:flex; justify-content:space-between; flex-wrap:wrap; gap:0.75rem; margin-bottom:1rem;">
+          <button class="btn btn-secondary" onclick="enterWorldMap()">⬅️ Kembali ke Peta</button>
+          <button class="btn btn-primary" onclick="window.print()">🖨️ Cetak / Simpan PDF Sertifikat</button>
+        </div>
+
+        <div class="certificate-box" id="certificateArea">
+          <div style="font-size:2.5rem;">🏆🧭✨</div>
+          <p style="font-weight:700; letter-spacing:2px; text-transform:uppercase; margin-bottom:0.2rem;">Sertifikat Penjelajah Matematika</p>
+          <h2>EKSPEDISI PULAU FUNGSI</h2>
+          <p>Diberikan dengan bangga kepada:</p>
+          <h1 id="certStudentName" style="color:#0f172a; font-size:2rem; border-bottom:2px solid #cbd5e1; display:inline-block; padding:0 1.5rem 0.3rem; margin:0.5rem 0;">Nama Siswa</h1>
+          <p id="certStudentClass" style="font-weight:600; font-size:1.1rem;">Kelas XI</p>
+          <p style="max-width:620px; margin:0.75rem auto;">
+            Telah berhasil memulihkan seluruh <strong>6 Zona Rantai Mesin Fungsi Komposisi</strong> (Matematika Fase F) melalui penyelidikan mandiri, ketekunan <em>Growth Mindset</em>, dan pemecahan masalah kontekstual.
+          </p>
+          <div style="display:flex; justify-content:center; gap:2rem; flex-wrap:wrap; margin:1.25rem 0; font-weight:700; color:#0f172a;">
+            <div>⭐ Total Bintang: <span id="certStars">0</span> / 18</div>
+            <div>🏅 Lencana Usaha: <span id="certBadges">0</span></div>
+            <div>📅 Tanggal: <span id="certDate">-</span></div>
+          </div>
+          <div id="certBadgeList" style="margin-top:0.75rem; font-size:0.9rem; color:#475569;"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 8. DASBOR GURU (TERSEMBUNYI DENGAN PIN) -->
+    <section id="screen-teacher" class="screen">
+      <div class="card">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem;">
+          <h2>📊 Dasbor Pemantauan Guru</h2>
+          <button class="btn btn-secondary btn-sm" onclick="showScreen('screen-login')">✖️ Tutup</button>
+        </div>
+        <p>Ringkasan data sesi perangkat ini & antrean pengiriman ke Google Spreadsheet:</p>
+
+        <div id="teacherStatsContent" style="background:#0f172a; padding:1rem; border-radius:12px; border:1px solid var(--border); margin-bottom:1rem;"></div>
+
+        <div style="display:flex; gap:0.75rem; flex-wrap:wrap;">
+          <button class="btn btn-primary btn-sm" onclick="flushOfflineQueue()">🔄 Kirim Ulang Antrean Data</button>
+          <button class="btn btn-secondary btn-sm" onclick="resetLocalProgressConfirm()">🗑️ Reset Data Sesi Lokal</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- MODAL PULIHKAN ENERGI / PESAN -->
+    <div id="customModal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.75); z-index:999; align-items:center; justify-content:center; padding:1rem;">
+      <div class="card" style="max-width:500px; width:100%; margin:0;">
+        <h3 id="modalTitle">Judul Modal</h3>
+        <div id="modalBody" style="margin:0.75rem 0 1.25rem;"></div>
+        <div style="text-align:right;">
+          <button class="btn btn-primary" onclick="closeModal()">Mengerti</button>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- ======================= FOOTER PENGEMBANG ======================= -->
+  <footer>
+    <div>
+      <strong>Gim Edukasi Fungsi Komposisi (Kurikulum Merdeka - Kelas XI Fase F)</strong>
+    </div>
+    <div style="margin-top:0.25rem;">
+      Pengembang: <strong>Rahmat Djafar, S.Pd., GR</strong> • Sekolah: <strong>SMA Islam Terpadu Al Ishlah Gorontalo</strong> • Instagram: <strong>@matdjafar</strong>
+    </div>
+  </footer>
+
+  <!-- ======================= SCRIPT UTAMA GIM ======================= -->
+  <script>
+    /* ==========================================================================
+       1. KONFIGURASI GOOGLE APPS SCRIPT & STATE UTAMA
+       ========================================================================== */
+    // TEMPEL URL WEB APP GOOGLE APPS SCRIPT ANDA DI BAWAH INI:
+    const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyCsy7pG7YOoHtl27lsTSwrvW4Z4FEfVOpxUHo49r_NWy-9WDQXBGJzdKPYgWhXkTrn/exec";
+
+    // DAFTAR NAMA SISWA KELAS XI (Silakan sesuaikan/tempel daftar nama siswa Bapak di sini)
+    const DAFTAR_SISWA_XI = [
+      "A. AISYAH HUMAIRA NURMUHAMMAD",
+      "ADLINA NUR SABRINA JUSUF",
+      "AISYAH KHUMAIROH SULEMAN",
+      "ALIF FIRMANSYAH MONOARFA",
+      "ARAFAH PUTRA IBRAHIM",
+      "AZDAH AZDKIA MUHIDDIN",
+      "DIMAS NASIR POTALE",
+      "FAIZAH JIHAADA PUTERI",
+      "FATHIYYAH NAAILAH ABDULLAH",
+      "LUTFIAH NUR MAGFIRAH PAKAYA",
+      "MUHAMMAD FAIZ DAKO",
+      "MUHAMMAD JIBRAN NUR SALEH",
+      "NAFILAH ADZHIMAH BADJA",
+      "NAJMAH FADHILAH MUNAWAR",
+      "NIDA' HUSNIAH R. MA'RUF",
+      "NURUL ISTIQOMAH R. ALI",
+      "RIZYA CHAMASYA USMAN",
+      "SHOFIYYAH SHOLIHAH ADAM",
+      "ZUHAIRAH DINIYYAH ATIFAH PAKUDU"
+    ];
+
+    const STORAGE_KEY_STATE = "pulau_fungsi_state_v1";
+    const STORAGE_KEY_ACCOUNTS = "pulau_fungsi_accounts_v1";
+    const STORAGE_KEY_QUEUE = "pulau_fungsi_queue_v1";
+
+    // Membuat ID Akun deterministik dari nama siswa agar bisa login & lanjut progres dari perangkat mana saja
+    function generateAccountId(nama) {
+      const clean = nama.trim().toLowerCase().replace(/[^a-z0-9]/g, "");
+      return "AKUN-XI-" + (clean || "penjelajah");
+    }
+
+    function createInitialState(nama = "") {
+      return {
+        sessionId: nama ? generateAccountId(nama) : "SESI-" + Date.now().toString(36).toUpperCase(),
+        nama: nama,
+        kelas: "XI",
+        charId: "teliti",
+        onboardingDone: false,
+        waktuMulai: new Date().toISOString(),
+        waktuSelesai: "",
+        energy: 5,
+        unlockedZone: 1,
+        zoneProgress: {
+          1: { completed: false, stars: 0, attempts: 0, bestScore: 0, hintsUsed: 0, lastStep: 1 },
+          2: { completed: false, stars: 0, attempts: 0, bestScore: 0, hintsUsed: 0, lastStep: 1 },
+          3: { completed: false, stars: 0, attempts: 0, bestScore: 0, hintsUsed: 0, lastStep: 1 },
+          4: { completed: false, stars: 0, attempts: 0, bestScore: 0, hintsUsed: 0, lastStep: 1 },
+          5: { completed: false, stars: 0, attempts: 0, bestScore: 0, hintsUsed: 0, lastStep: 1 },
+          6: { completed: false, stars: 0, attempts: 0, bestScore: 0, hintsUsed: 0, lastStep: 1 }
+        },
+        badges: [],
+        muted: false
+      };
+    }
+
+    // Daftar 6 Karakter Netral Gender dengan Kekuatan Growth Mindset
+    const CHARACTERS = [
+      { id: "teliti", name: "Si Teliti (Alia)", avatar: "🔍", trait: "Cermat memeriksa setiap input dan langkah mesin.", quote: "Pelan-pelan kita amati polanya. Ketelitian adalah kunci!" },
+      { id: "gigih", name: "Si Gigih (Bima)", avatar: "🛠️", trait: "Tidak pernah menyerah meski rantai mesin belum tepat.", quote: "Belum ketemu jawabannya? Ikhtiar lagi dengan strategi baru!" },
+      { id: "kreatif", name: "Si Kreatif (Citra)", avatar: "🎨", trait: "Senang mencoba berbagai angka eksperimen yang unik.", quote: "Ayo kita uji dengan angka lain, siapa tahu ada kejutan pola!" },
+      { id: "kritis", name: "Si Kritis (Damar)", avatar: "🧭", trait: "Suka bertanya 'mengapa' dan membuktikan kebenaran rumus.", quote: "Jangan langsung percaya dugaan sebelum kita uji buktinya!" },
+      { id: "sabar", name: "Si Sabar (Elok)", avatar: "🌱", trait: "Tenang menghadapi soal rumit dan menguraikannya setahap demi setahap.", quote: "Sabar dan urutkan dari mesin paling dalam, insyaAllah jelas." },
+      { id: "penjelajah", name: "Si Penjelajah (Fajar)", avatar: "🚀", trait: "Gemar menghubungkan rumus matematika dengan kehidupan nyata.", quote: "Matematika itu hidup di sekitar kita, dari sulam Karawo sampai perdagangan!" }
+    ];
+
+    // Daftar Lencana Usaha (Growth Mindset Badges)
+    const BADGES = [
+      { id: "pantang_menyerah", name: "Pantang Menyerah", icon: "🔥", desc: "Berhasil menyelesaikan soal setelah mencoba ulang dengan tekun." },
+      { id: "pemburu_petunjuk", name: "Strategi Cerdas", icon: "💡", desc: "Menggunakan petunjuk bertingkat untuk memahami alur berpikir." },
+      { id: "penemu_pola", name: "Penemu Pola", icon: "🔬", desc: "Menyelesaikan tahap eksperimen dan generalisasi mandiri." },
+      { id: "detektif_kesalahan", name: "Detektif Kesalahan", icon: "🕵️", desc: "Berhasil menemukan dan memperbaiki kekeliruan urutan fungsi." },
+      { id: "naik_level", name: "Naik Level", icon: "📈", desc: "Memperbaiki capaian bintang zona melalui percobaan ulang." },
+      { id: "penjaga_hulontalo", name: "Penjaga Hulontalo", icon: "👑", desc: "Menuntaskan seluruh 6 Zona Ekspedisi Pulau Fungsi." }
+    ];
+
+    // State Sesi Siswa
+    let gameState = createInitialState();
+
+    /* ==========================================================================
+       2. DATABASE 6 ZONA (SINTAKS DISCOVERY LEARNING + KUIS BERJENJANG)
+       ========================================================================== */
+    const ZONES_DATA = [
+      {
+        id: 1,
+        title: "Zona 1 – Gerbang Mesin (Pengantar Fungsi)",
+        subtitle: "Mengingat kembali fungsi sebagai mesin pengolah Input menjadi Output.",
+        goalPrompt: "Memahami bagaimana mesin fungsi mengubah input x menjadi output f(x) secara konsisten.",
+        stimulation: "Di Gerbang Pelabuhan Gorontalo, terdapat <strong>Mesin Pemipil Jagung \(f\)</strong>. Setiap kali petani memasukkan \(x\) keranjang jagung mentah, mesin itu mengolahnya dengan aturan: mengalikan dua lalu menambah 3 kemasan.",
+        detectiveQ: {
+          prompt: "Sebagai Penjelajah, pertanyaan penyelidikan mana yang paling tepat untuk memahami cara kerja Mesin \(f\)?",
+          options: [
+            "Bagaimana hubungan matematika antara banyaknya input jagung (x) dengan hasil olahan keluaran f(x)?",
+            "Siapa nama pembuat mesin pemipil jagung di pelabuhan tersebut?",
+            "Berapa warna cat yang digunakan pada dinding gudang pelabuhan?"
+          ],
+          correctIdx: 0,
+          explain: "Tepat! Dalam matematika, kita menyelidiki aturan yang menghubungkan masukan (input \(x\)) dengan keluaran (output \(f(x)\))."
+        },
+        machineConfig: {
+          type: "single",
+          label1: "Mesin f(x) = 2x + 3",
+          fn1: (x) => 2 * x + 3,
+          desc: "Masukkan beberapa nilai x (misalnya 2, 4, atau 5) ke dalam Mesin f dan amati keluarannya!"
+        },
+        dataProcessing: {
+          prompt: "Berdasarkan uji coba mesin di atas, jika petani memasukkan \(x = 6\) keranjang, berapakah hasil keluaran \(f(6)\)?",
+          answer: 15,
+          hint: "Substitusikan x = 6 ke aturan 2x + 3, yaitu 2(6) + 3."
+        },
+        verification: {
+          misconceptionTitle: "🕵️ Zona Belajar dari Kesalahan",
+          story: "Seorang asisten mekanik menghitung \(f(4)\) pada mesin \(f(x) = 2x + 3\) dengan cara: \(f(4) = 2 + 4 + 3 = 9\). Mengapa perhitungan asisten ini keliru?",
+          options: [
+            "Karena 2x artinya 2 dikali x, sehingga seharusnya 2(4) + 3 = 11, bukan dijumlahkan.",
+            "Karena seharusnya angka 3 dikurangi dengan 4 terlebih dahulu.",
+            "Perhitungan asisten sudah benar, hasilnya memang 9."
+          ],
+          correctIdx: 0,
+          explain: "Hebat! Kamu jeli melihat bahwa \(2x\) berarti perkalian \(2 \cdot x\), sehingga \(f(4) = 2(4) + 3 = 11\)."
+        },
+        generalization: {
+          template: "Suatu fungsi f bekerja seperti mesin yang menerima masukan (input) x dan memprosesnya sesuai aturan tertentu menjadi tepat satu...",
+          options: ["keluaran (output) f(x)", "masukan baru tanpa aturan", "bilangan acak yang berubah-ubah"],
+          correctIdx: 0,
+          bookFormula: "\\[ f : x \\rightarrow f(x) \\] Fungsi memetakan setiap anggota domain \\(x\\) ke tepat satu hasil \\(f(x)\\). Nilai fungsi untuk \\(x = a\\) diperoleh dengan mensubstitusikan \\(a\\) ke dalam rumus \\(f(x)\\)."
+        },
+        quizzes: [
+          {
+            id: "Z1Q1",
+            level: "LOTS",
+            question: "Jika mesin fungsi memiliki aturan \\(g(x) = 3x - 2\\), berapakah nilai keluaran untuk masukan \\(x = 5\\)?",
+            options: ["13", "15", "17", "10"],
+            correctIdx: 0,
+            hints: [
+              "Isyarat: Ganti variabel x pada rumus 3x - 2 dengan angka 5.",
+              "Langkah awal: Hitung terlebih dahulu 3 dikali 5, lalu kurangi 2.",
+              "Contoh serupa: Untuk x = 4, maka g(4) = 3(4) - 2 = 12 - 2 = 10."
+            ],
+            feedback: "Substitusi x = 5 menghasilkan g(5) = 3(5) - 2 = 15 - 2 = 13."
+          },
+          {
+            id: "Z1Q2",
+            level: "MOTS",
+            question: "Sebuah mesin pengering kopra mengikuti aturan \\(h(x) = x^2 + 1\\). Jika mesin mengeluarkan hasil \\(h(a) = 26\\) untuk \\(a > 0\\), berapakah masukan \\(a\\) yang dimasukkan?",
+            options: ["5", "6", "4", "25"],
+            correctIdx: 0,
+            hints: [
+              "Isyarat: Kali ini keluarannya diketahui (26), dan kamu mencari nilai masukannya.",
+              "Langkah awal: Buat persamaan a² + 1 = 26, lalu kurangi kedua ruas dengan 1.",
+              "Contoh serupa: Jika a² + 1 = 10, maka a² = 9 sehingga a = 3."
+            ],
+            feedback: "Dari a² + 1 = 26 diperoleh a² = 25. Karena a > 0, maka a = 5."
+          }
+        ]
+      },
+      {
+        id: 2,
+        title: "Zona 2 – Rantai Dua Mesin (Konsep Komposisi)",
+        subtitle: "Menemukan konsep (f ∘ g)(x) = f(g(x)) dari dua mesin yang bekerja berurutan.",
+        goalPrompt: "Menemukan arti notasi (f ∘ g)(x) dan memahami mesin mana yang bekerja lebih dulu.",
+        stimulation: "Di Sentra Kerajinan <strong>Sulam Karawo</strong>, benang mentah \(x\) harus melewati dua mesin berurutan: pertama masuk ke <strong>Mesin Pemintal \(g\)</strong> dengan aturan \(g(x) = x + 2\), lalu hasilnya langsung masuk ke <strong>Mesin Pewarna \(f\)</strong> dengan aturan \(f(y) = 3y\).",
+        detectiveQ: {
+          prompt: "Pertanyaan detektif mana yang membantu kita menggabungkan kedua mesin tersebut menjadi satu sistem?",
+          options: [
+            "Jika input x masuk ke mesin g terlebih dahulu lalu hasilnya masuk ke mesin f, bagaimana rumus gabungan akhirnya?",
+            "Berapa harga jual kain Karawo di pasar tradisional?",
+            "Mengapa mesin pewarna tidak diletakkan di luar ruangan?"
+          ],
+          correctIdx: 0,
+          explain: "Benar! Kita ingin tahu bagaimana keluaran dari mesin pertama \(g(x)\) menjadi masukan bagi mesin kedua \(f\)."
+        },
+        machineConfig: {
+          type: "double",
+          label1: "Mesin 1: g(x) = x + 2",
+          fn1: (x) => x + 2,
+          label2: "Mesin 2: f(y) = 3y",
+          fn2: (y) => 3 * y,
+          desc: "Masukkan nilai x! Perhatikan bagaimana x masuk ke g(x) dulu, lalu keluarannya langsung diolah oleh f."
+        },
+        dataProcessing: {
+          prompt: "Gunakan simulator di atas! Jika kita memasukkan \(x = 4\) ke Mesin \(g\), keluarannya adalah \(6\). Lalu angka \(6\) masuk ke Mesin \(f\). Berapakah hasil akhir keluarannya?",
+          answer: 18,
+          hint: "Masukkan x = 4 ke g(x) = x + 2 sehingga dapat 6. Lalu masukkan 6 ke f(y) = 3y."
+        },
+        verification: {
+          misconceptionTitle: "🕵️ Zona Belajar dari Kesalahan: Jebakan Notasi!",
+          story: "Banyak penjelajah pemula mengira notasi \((f \circ g)(x)\) berarti kerjakan \(f\) dulu baru \(g\) karena huruf \(f\) ditulis di depan. Setelah melihat cara kerja mesin \(f(g(x))\), mana pernyataan yang benar?",
+          options: [
+            "Pada (f ∘ g)(x) = f(g(x)), fungsi g berada paling dekat dengan x di dalam kurung, sehingga g wajib dikerjakan lebih dulu, baru hasilnya dimasukkan ke f.",
+            "Huruf paling kiri selalu dikerjakan lebih dulu tanpa peduli tanda kurung.",
+            "Urutan pengerjaan bebas karena hasilnya pasti sama."
+          ],
+          correctIdx: 0,
+          explain: "Penemuan penting! Dalam \((f \circ g)(x) = f(g(x))\), kita bekerja dari dalam kurung: **kerjakan \(g(x)\) dulu, baru hasilnya dimasukkan ke \(f\)**."
+        },
+        generalization: {
+          template: "Komposisi fungsi (f ∘ g)(x) dibaca 'f bundaran g dari x', yang artinya memasukkan hasil dari fungsi ... ke dalam fungsi ...",
+          options: ["g(x) ke dalam fungsi f, sehingga ditulis f(g(x))", "f(x) ke dalam fungsi g, sehingga ditulis g(f(x))", "x ditambah f lalu ditambah g"],
+          correctIdx: 0,
+          bookFormula: "\\[ (f \\circ g)(x) = f(g(x)) \\] Artinya: masukan \\(x\\) diproses oleh fungsi \\(g\\) terlebih dahulu menghasilkan \\(g(x)\\), kemudian \\(g(x)\\) menjadi masukan untuk fungsi \\(f\\)."
+        },
+        quizzes: [
+          {
+            id: "Z2Q1",
+            level: "LOTS",
+            question: "Diketahui \\(g(x) = x + 4\\) dan \\(f(x) = 2x\\). Jika \\(x = 3\\) dimasukkan ke dalam komposisi \\((f \\circ g)(3)\\), berapakah hasilnya?",
+            options: ["14", "10", "12", "9"],
+            correctIdx: 0,
+            hints: [
+              "Isyarat: Ingat (f ∘ g)(3) = f(g(3)). Kerjakan g(3) terlebih dahulu!",
+              "Langkah awal: Hitung g(3) = 3 + 4 = 7. Lalu masukkan 7 ke fungsi f.",
+              "Contoh serupa: Untuk (f ∘ g)(1), kita hitung g(1) = 5, lalu f(5) = 2(5) = 10."
+            ],
+            feedback: "Langkah 1: g(3) = 3 + 4 = 7. Langkah 2: f(7) = 2(7) = 14."
+          },
+          {
+            id: "Z2Q2",
+            level: "HOTS",
+            question: "Di pabrik pengolahan jagung Gorontalo, mesin \\(p(x)\\) mengubah berat jagung \\(x\\) kg menjadi tepung, dan mesin \\(q(y)\\) mengubah tepung \\(y\\) kg menjadi jumlah bungkus keripik. Apa arti dari ekspresi \\((q \\circ p)(10)\\) beserta alasannya?",
+            options: [
+              "Jumlah bungkus keripik yang dihasilkan dari 10 kg jagung mentah, karena 10 diproses mesin tepung p dulu lalu hasilnya dibungkus mesin q.",
+              "Berat jagung yang dibutuhkan untuk membuat 10 bungkus keripik, karena q dikerjakan lebih dulu.",
+              "10 mesin bekerja bersamaan menghasilkan tepung dan keripik."
+            ],
+            correctIdx: 0,
+            hints: [
+              "Isyarat: Perhatikan fungsi mana yang langsung memproses angka 10 pada q(p(10)).",
+              "Langkah awal: Angka 10 adalah input untuk p(x) (jagung mentah), dan output akhirnya keluar dari mesin q (bungkus keripik).",
+              "Contoh serupa: Jika p mengubah jam belajar menjadi ilmu, dan q mengubah ilmu menjadi karya, maka (q ∘ p)(2) adalah karya dari 2 jam belajar."
+            ],
+            feedback: "Luar biasa! Karena (q ∘ p)(10) = q(p(10)), input awalnya adalah 10 kg jagung pada fungsi p, dan output akhirnya adalah jumlah bungkus keripik dari fungsi q."
+          }
+        ]
+      },
+      {
+        id: 3,
+        title: "Zona 3 – Hutan Aturan (Nilai & Rumus Komposisi)",
+        subtitle: "Menurunkan rumus umum (f ∘ g)(x) dengan mensubstitusikan aljabar.",
+        goalPrompt: "Mampu menyusun rumus umum (f ∘ g)(x) dan menghitung nilainya dengan langkah yang runtut.",
+        stimulation: "Melewati Hutan Aturan, kita menemukan bahwa menghitung satu per satu angka memakan waktu lama. Para tetua ingin kita merakit **satu rumus langsung** untuk \((f \circ g)(x)\) jika diketahui \(f(x) = 2x - 1\) dan \(g(x) = x + 3\).",
+        detectiveQ: {
+          prompt: "Bagaimana cara menyatukan aturan \(g(x) = x + 3\) ke dalam aturan \(f(x) = 2x - 1\)?",
+          options: [
+            "Mengganti setiap variabel x pada rumus f(x) dengan seluruh ekspresi g(x), yaitu (x + 3).",
+            "Menjumlahkan langsung 2x - 1 dengan x + 3 menjadi 3x + 2.",
+            "Mengalikan angka belakangnya saja yaitu -1 dikali 3."
+          ],
+          correctIdx: 0,
+          explain: "Tepat sekali! Karena \(f(g(x))\), maka posisi \(x\) pada \(f(x) = 2x - 1\) digantikan oleh blok \((x + 3)\)."
+        },
+        machineConfig: {
+          type: "double",
+          label1: "g(x) = x + 3",
+          fn1: (x) => x + 3,
+          label2: "f(x) = 2x - 1",
+          fn2: (y) => 2 * y - 1,
+          desc: "Uji beberapa nilai x! Bandingkan hasil rantai dua mesin ini dengan rumus langsung 2x + 5."
+        },
+        dataProcessing: {
+          prompt: "Mari kita jabarkan: \(f(g(x)) = 2(x + 3) - 1 = 2x + 6 - 1 = 2x + k\). Berapakah nilai konstanta \(k\) tersebut?",
+          answer: 5,
+          hint: "Hitung 6 dikurangi 1 pada bentuk 2x + 6 - 1."
+        },
+        verification: {
+          misconceptionTitle: "🕵️ Zona Belajar dari Kesalahan: Lupa Tanda Kurung!",
+          story: "Saat mencari \((f \circ g)(x)\) dengan \(f(x) = 3x + 2\) dan \(g(x) = 2x - 5\), seorang siswa menulis: \(f(g(x)) = 3 \cdot 2x - 5 + 2 = 6x - 3\). Di mana letak kekeliruan siswa tersebut?",
+          options: [
+            "Siswa lupa memberi tanda kurung pada (2x - 5). Seharusnya 3(2x - 5) + 2 = 6x - 15 + 2 = 6x - 13.",
+            "Seharusnya angka 3 hanya dikalikan dengan -5 saja.",
+            "Tidak ada kesalahan, hasilnya memang 6x - 3."
+          ],
+          correctIdx: 0,
+          explain: "Sangat teliti! Saat mensubstitusi fungsi yang terdiri dari dua suku seperti \((2x - 5)\), wajib gunakan tanda kurung agar koefisien \(3\) mengalikan seluruh suku di dalamnya."
+        },
+        generalization: {
+          template: "Untuk menentukan rumus (f ∘ g)(x), kita mensubstitusikan rumus g(x) menggantikan setiap variabel x pada fungsi f(x), kemudian...",
+          options: ["menyederhanakan bentuk aljabarnya dengan sifat distributif", "menghapus semua tanda kurung tanpa dikalikan", "membalik tanda positif menjadi negatif"],
+          correctIdx: 0,
+          bookFormula: "Langkah menentukan rumus \\((f \\circ g)(x)\\):<br>1. Tulis \\((f \\circ g)(x) = f(g(x))\\)<br>2. Substitusikan rumus \\(g(x)\\) ke dalam kurung.<br>3. Ganti setiap \\(x\\) pada aturan \\(f\\) dengan \\((g(x))\\) lalu sederhanakan."
+        },
+        quizzes: [
+          {
+            id: "Z3Q1",
+            level: "MOTS",
+            question: "Diketahui \\(f(x) = 4x - 3\\) dan \\(g(x) = 2x + 1\\). Rumus fungsi komposisi \\((f \\circ g)(x)\\) adalah...",
+            options: ["8x + 1", "8x - 2", "6x - 2", "8x + 4"],
+            correctIdx: 0,
+            hints: [
+              "Isyarat: Ganti x pada 4x - 3 dengan (2x + 1).",
+              "Langkah awal: (f ∘ g)(x) = 4(2x + 1) - 3. Kalikan 4 ke dalam kurung!",
+              "Contoh serupa: Jika f(x) = 5x - 2 dan g(x) = x + 1, maka f(g(x)) = 5(x + 1) - 2 = 5x + 3."
+            ],
+            feedback: "(f ∘ g)(x) = f(2x + 1) = 4(2x + 1) - 3 = 8x + 4 - 3 = 8x + 1."
+          },
+          {
+            id: "Z3Q2",
+            level: "HOTS",
+            question: "Diketahui \\(f(x) = x^2 - 1\\) dan \\(g(x) = x + 2\\). Manakah rumus \\((f \\circ g)(x)\\) beserta alasan penjabarannya yang benar?",
+            options: [
+              "x² + 4x + 3, karena (x + 2)² - 1 dijabarkan menjadi (x² + 4x + 4) - 1.",
+              "x² + 3, karena (x + 2)² cukup dikuadratkan masing-masing menjadi x² + 4 lalu dikurangi 1.",
+              "x² + 1, karena f(x) dikerjakan lebih dulu baru ditambah 2."
+            ],
+            correctIdx: 0,
+            hints: [
+              "Isyarat: Ingat bahwa (a + b)² = a² + 2ab + b², bukan a² + b².",
+              "Langkah awal: f(g(x)) = (x + 2)² - 1. Jabarkan (x + 2)(x + 2) terlebih dahulu.",
+              "Contoh serupa: (x + 3)² - 1 = (x² + 6x + 9) - 1 = x² + 6x + 8."
+            ],
+            feedback: "Benar! (f ∘ g)(x) = (x + 2)² - 1 = (x² + 4x + 4) - 1 = x² + 4x + 3."
+          }
+        ]
+      },
+      {
+        id: 4,
+        title: "Zona 4 – Jembatan Tukar Urutan (Sifat Komposisi)",
+        subtitle: "Menyelidiki sifat komutatif, asosiatif, dan fungsi identitas I(x) = x.",
+        goalPrompt: "Menemukan sendiri apakah urutan komposisi fungsi boleh ditukar dan bagaimana sifat pengelompokannya.",
+        stimulation: "Di Jembatan Sungai Bone, dua mekanik berdebat: Mekanik A memasang **Mesin \(g\) lalu Mesin \(f\)** \((f \circ g)\), sedangkan Mekanik B menukar urutannya menjadi **Mesin \(f\) lalu Mesin \(g\)** \((g \circ f)\). Apakah hasil keduanya sama?",
+        detectiveQ: {
+          prompt: "Bagaimana cara membuktikan secara ilmiah apakah \((f \circ g)(x)\) selalu sama dengan \((g \circ f)(x)\)?",
+          options: [
+            "Menguji dengan sebuah nilai x pada kedua urutan mesin, lalu membandingkan apakah hasil (f ∘ g)(x) dan (g ∘ f)(x) sama atau berbeda.",
+            "Menebak saja bahwa semua operasi matematika pasti bersifat komutatif.",
+            "Mengganti kedua mesin dengan mesin yang rusak."
+          ],
+          correctIdx: 0,
+          explain: "Cerdas! Dalam matematika, satu contoh penyangkal saja sudah cukup membuktikan bahwa sifat komutatif tidak berlaku umum."
+        },
+        machineConfig: {
+          type: "double",
+          label1: "Urutan 1: g(x)=x+1 lalu f(x)=2x",
+          fn1: (x) => x + 1,
+          label2: "Hasil (f ∘ g)(x) = 2(x+1)",
+          fn2: (y) => 2 * y,
+          desc: "Coba masukkan x = 3! Pada (f ∘ g)(3) hasilnya 2(3+1) = 8. Sekarang hitung di kepalamu: jika dibalik (g ∘ f)(3), yaitu f(3)=6 lalu ditambah 1, berapakah hasilnya?"
+        },
+        dataProcessing: {
+          prompt: "Untuk \(f(x) = 2x\) dan \(g(x) = x + 1\), tadi kita dapat \((f \circ g)(3) = 8\). Berapakah nilai kebalikannya, yaitu \((g \circ f)(3) = g(f(3))\)?",
+          answer: 7,
+          hint: "Hitung f(3) = 2(3) = 6 terlebih dahulu, lalu masukkan ke g(6) = 6 + 1."
+        },
+        verification: {
+          misconceptionTitle: "🕵️ Eksperimen Tiga Mesin & Mesin Identitas",
+          story: "Ternyata \(8 \neq 7\), sehingga \(f \circ g \neq g \circ f\) (TIDAK komutatif)! Namun saat para mekanik merangkai 3 mesin berurutan \(((f \circ g) \circ h)(x)\) dan \((f \circ (g \circ h))(x)\), hasilnya selalu SAMA. Selain itu ada **Mesin Cermin \(I(x) = x\)** yang tidak mengubah input. Apa sifat yang berlaku?",
+          options: [
+            "Komposisi fungsi TIDAK komutatif, tetapi bersifat ASOSIATIF ((f ∘ g) ∘ h = f ∘ (g ∘ h)) dan memiliki fungsi identitas I(x) = x di mana f ∘ I = I ∘ f = f.",
+            "Komposisi fungsi bersifat komutatif tetapi tidak asosiatif.",
+            "Fungsi identitas I(x) = x selalu mengubah semua input menjadi angka nol."
+          ],
+          correctIdx: 0,
+          explain: "Penemuan luar biasa! Urutan posisi fungsi tidak boleh ditukar (tidak komutatif), namun pengelompokan kurungnya bersifat **asosiatif**, dan \(I(x) = x\) adalah **fungsi identitas**."
+        },
+        generalization: {
+          template: "Sifat-sifat komposisi fungsi adalah: (1) Tidak bersifat ..., (2) Bersifat Asosiatif, dan (3) Berlaku sifat Identitas f ∘ I = I ∘ f = f.",
+          options: ["Komutatif (jadi f ∘ g ≠ g ∘ f)", "Asosiatif", "Distributif nol"],
+          correctIdx: 0,
+          bookFormula: "Sifat-Sifat Komposisi Fungsi:<br>1. <strong>Tidak Komutatif</strong>: \\((f \\circ g)(x) \\neq (g \\circ f)(x)\\)<br>2. <strong>Asosiatif</strong>: \\(((f \\circ g) \\circ h)(x) = (f \\circ (g \\circ h))(x)\\)<br>3. <strong>Identitas</strong>: Terdapat \\(I(x) = x\\) sehingga \\((f \\circ I)(x) = (I \\circ f)(x) = f(x)\\)."
+        },
+        quizzes: [
+          {
+            id: "Z4Q1",
+            level: "MOTS",
+            question: "Diketahui \\(f(x) = 3x - 1\\) dan fungsi identitas \\(I(x) = x\\). Hasil dari \\((f \\circ I)(5) - (I \\circ f)(2)\\) adalah...",
+            options: ["9", "14", "5", "0"],
+            correctIdx: 0,
+            hints: [
+              "Isyarat: Ingat sifat fungsi identitas! (f ∘ I)(x) sama saja dengan f(x).",
+              "Langkah awal: Hitung f(5) = 3(5) - 1 = 14, dan f(2) = 3(2) - 1 = 5.",
+              "Contoh serupa: Kurangkan hasil keduanya: 14 - 5."
+            ],
+            feedback: "Karena sifat identitas, (f ∘ I)(5) = f(5) = 14 dan (I ∘ f)(2) = f(2) = 5. Maka 14 - 5 = 9."
+          },
+          {
+            id: "Z4Q2",
+            level: "HOTS",
+            question: "Mengapa memakai kaus kaki lalu memakai sepatu berbeda hasilnya dengan memakai sepatu dulu lalu memakai kaus kaki? Kaitkan dengan sifat komposisi fungsi!",
+            options: [
+              "Karena urutan proses mempengaruhi hasil akhir, sesuai sifat komposisi fungsi yang tidak komutatif (f ∘ g ≠ g ∘ f).",
+              "Karena kedua kegiatan tersebut merupakan fungsi identitas yang tidak mengubah apa pun.",
+              "Karena sifat asosiatif melarang kita melakukan dua kegiatan berurutan."
+            ],
+            correctIdx: 0,
+            hints: [
+              "Isyarat: Pikirkan apakah urutan langkah boleh dipertukarkan begitu saja.",
+              "Langkah awal: Menukar urutan f dan g menghasilkan output yang berbeda.",
+              "Contoh serupa: Mencuci beras lalu memasaknya tentu berbeda dengan memasak beras kering lalu mencucinya."
+            ],
+            feedback: "Analogi kontekstual yang sangat tepat! Urutan proses di dunia nyata maupun pada komposisi fungsi tidak bersifat komutatif."
+          }
+        ]
+      },
+      {
+        id: 5,
+        title: "Zona 5 – Gua Fungsi Tersembunyi (Fungsi Pembentuk)",
+        subtitle: "Menentukan fungsi f(x) atau g(x) jika hasil komposisinya diketahui.",
+        goalPrompt: "Mampu bernalar terbalik untuk menemukan fungsi pembentuk yang hilang.",
+        stimulation: "Di dalam Gua Kars Gorontalo, salah satu mesin tertutup kabut! Kita tahu rumus gabungan \((f \circ g)(x) = 2x + 7\) dan mesin luarnya adalah \(f(x) = 2x + 1\). Bagaimana cara menebak rumus mesin dalam \(g(x)\) yang tersembunyi?",
+        detectiveQ: {
+          prompt: "Strategi detektif mana yang dapat membongkar isi mesin \(g(x)\) yang tersembunyi?",
+          options: [
+            "Menggunakan definisi f(g(x)) = 2x + 7, lalu mengganti f(g(x)) menjadi 2·g(x) + 1 = 2x + 7 dan mencari g(x).",
+            "Mengalikan 2x + 7 dengan 2x + 1 secara langsung.",
+            "Menghapus variabel x dari kedua fungsi."
+          ],
+          correctIdx: 0,
+          explain: "Brilian! Karena \(f(\text{sesuatu}) = 2(\text{sesuatu}) + 1\), maka \(f(g(x)) = 2g(x) + 1\). Kita tinggal menyamakannya dengan \(2x + 7\)."
+        },
+        machineConfig: {
+          type: "double",
+          label1: "g(x) = x + 3 (Ditemukan!)",
+          fn1: (x) => x + 3,
+          label2: "f(x) = 2x + 1",
+          fn2: (y) => 2 * y + 1,
+          desc: "Uji apakah benar g(x) = x + 3 yang dipadukan dengan f(x) = 2x + 1 menghasilkan 2x + 7!"
+        },
+        dataProcessing: {
+          prompt: "Dari persamaan \(2 \cdot g(x) + 1 = 2x + 7\), kita kurangi kedua ruas dengan 1 sehingga \(2 \cdot g(x) = 2x + 6\). Jika dibagi 2, maka \(g(x) = x + c\). Berapakah nilai \(c\)?",
+          answer: 3,
+          hint: "Bagi setiap suku pada (2x + 6) dengan angka 2."
+        },
+        verification: {
+          misconceptionTitle: "🕵️ Kasus Kedua: Mencari Mesin Luar f(x)",
+          story: "Bagaimana jika yang diketahui adalah \((f \circ g)(x) = 3x + 8\) dan mesin dalamnya \(g(x) = x + 2\), lalu kita ingin mencari \(f(x)\)? Perhatikan metode **Pemisalan**: misalkan \(y = x + 2\), maka \(x = y - 2\). Mengapa kita mengubah menjadi \(x = y - 2\)?",
+          options: [
+            "Agar kita bisa mengganti x pada 3x + 8 menjadi 3(y - 2) + 8 = 3y + 2, sehingga diperoleh f(x) = 3x + 2.",
+            "Agar nilai x hilang dan berubah menjadi angka nol.",
+            "Karena semua fungsi wajib menggunakan huruf y."
+          ],
+          correctIdx: 0,
+          explain: "Tepat sekali! Dengan memisalkan \(g(x) = y\), bentuk \(f(g(x))\) menjadi \(f(y)\). Mengubah \(x\) dalam \(y\) membuat kita menemukan rumus murni \(f(y)\)."
+        },
+        generalization: {
+          template: "Saat mencari fungsi pembentuk: (1) Jika mencari g(x) di dalam, substitusikan langsung ke aturan f. (2) Jika mencari f(x) di luar, gunakan metode...",
+          options: ["pemisalan y = g(x) lalu nyatakan x dalam y", "penjumlahan kedua fungsi secara acak", "pembagian dengan fungsi identitas"],
+          correctIdx: 0,
+          bookFormula: "Menentukan Fungsi Pembentuk:<br>• <strong>Diketahui \\(f(x)\\) dan \\((f \\circ g)(x)\\), cari \\(g(x)\\)</strong>: bentuk persamaan \\(f(g(x)) = (f \\circ g)(x)\\) lalu selesaikan untuk \\(g(x)\\).<br>• <strong>Diketahui \\(g(x)\\) dan \\((f \\circ g)(x)\\), cari \\(f(x)\\)</strong>: misalkan \\(y = g(x)\\), cari \\(x\\) dalam \\(y\\), lalu substitusikan ke \\((f \\circ g)(x)\\)."
+        },
+        quizzes: [
+          {
+            id: "Z5Q1",
+            level: "MOTS",
+            question: "Diketahui \\((f \\circ g)(x) = 4x + 9\\) dan \\(f(x) = 2x - 1\\). Rumus fungsi \\(g(x)\\) adalah...",
+            options: ["2x + 5", "2x + 4", "2x - 5", "4x + 10"],
+            correctIdx: 0,
+            hints: [
+              "Isyarat: Gunakan f(g(x)) = 4x + 9. Karena f(x) = 2x - 1, maka ruas kiri menjadi 2·g(x) - 1.",
+              "Langkah awal: 2·g(x) - 1 = 4x + 9  ==>  2·g(x) = 4x + 10.",
+              "Contoh serupa: Bagi kedua ruas dengan 2 untuk mendapatkan g(x)."
+            ],
+            feedback: "2·g(x) - 1 = 4x + 9 → 2·g(x) = 4x + 10 → g(x) = 2x + 5."
+          },
+          {
+            id: "Z5Q2",
+            level: "HOTS",
+            question: "Diketahui \\((f \\circ g)(x) = 2x - 3\\) dan \\(g(x) = x - 4\\). Berapakah nilai dari \\(f(5)\\)?",
+            options: ["15", "7", "11", "9"],
+            correctIdx: 0,
+            hints: [
+              "Isyarat: Kita ingin f(g(x)) menjadi f(5). Jadi carilah nilai x agar g(x) = 5!",
+              "Langkah awal: Agar x - 4 = 5, maka x harus bernilai 9.",
+              "Contoh serupa: Substitusikan x = 9 ke rumus 2x - 3, yaitu 2(9) - 3."
+            ],
+            feedback: "Cara cerdas! Agar g(x) = x - 4 bernilai 5, kita pilih x = 9. Maka f(5) = 2(9) - 3 = 18 - 3 = 15. (Atau cari dulu f(x) = 2x + 5, lalu f(5) = 15)."
+          }
+        ]
+      },
+      {
+        id: 6,
+        title: "Zona 6 – Kota Masalah Nyata (Kontekstual & HOTS)",
+        subtitle: "Memodelkan masalah kehidupan sehari-hari, kearifan lokal Gorontalo, dan nilai kebaikan dengan komposisi fungsi.",
+        goalPrompt: "Memecahkan masalah nyata berantai dan menjelaskan mengapa urutan proses sangat menentukan hasil.",
+        stimulation: "Selamat datang di **Kota Hulontalo**! Di pusat kota ini, semua aktivitas ekonomi dan sosial berjalan dengan rantai fungsi: mulai dari produksi kain **Sulam Karawo**, perhitungan **diskon & ongkir koperasi**, konversi suhu ruang pengeringan, hingga perhitungan **penghasilan bersih & zakat/infak**.",
+        detectiveQ: {
+          prompt: "Saat menghadapi masalah nyata yang terdiri dari dua tahap berurutan (Tahap 1 adalah fungsi \(g\), Tahap 2 adalah fungsi \(f\)), bagaimana cara memodelkannya?",
+          options: [
+            "Menentukan fungsi tahap pertama g(x) sebagai fungsi dalam, dan fungsi tahap kedua f sebagai fungsi luar, sehingga modelnya adalah (f ∘ g)(x) = f(g(x)).",
+            "Menukar tahap kedua menjadi di dalam kurung tanpa melihat alur cerita.",
+            "Menjumlahkan semua angka yang ada di dalam soal cerita."
+          ],
+          correctIdx: 0,
+          explain: "Sangat tepat! Tahap yang terjadi **pertama kali** selalu memproses \(x\) lebih dulu, sehingga berada di dalam: \(f(g(x))\)."
+        },
+        machineConfig: {
+          type: "double",
+          label1: "Tahap 1 (Potongan/Biaya Tetap): g(x) = x - 10",
+          fn1: (x) => x - 10,
+          label2: "Tahap 2 (Lipat Ganda Nilai): f(y) = 2y",
+          fn2: (y) => 2 * y,
+          desc: "Simulasikan bagaimana proses dua tahap bekerja pada angka masukan!"
+        },
+        dataProcessing: {
+          prompt: "Sebuah UMKM keripik jagung Gorontalo mengolah \(x\) kg bahan mentah. Tahap 1 (pengupasan) menyusutkan berat sebesar 2 kg: \(g(x) = x - 2\). Tahap 2 (penggorengan bumbu) menghasilkan kemasan sebanyak 5 bungkus per kg bersih: \(f(y) = 5y\). Jika UMKM mengolah \(x = 12\) kg jagung mentah, berapa bungkus keripik yang dihasilkan?",
+          answer: 50,
+          hint: "Hitung tahap 1: g(12) = 12 - 2 = 10 kg bersih. Lalu tahap 2: f(10) = 5(10)."
+        },
+        verification: {
+          misconceptionTitle: "🕵️ Bernalar Tanpa Angka: Mengapa Urutan Penting?",
+          story: "Sebuah toko busana Karawo memberikan dua promo: **Fungsi D (Diskon 20%)** dan **Fungsi V (Potongan Voucher Rp50.000)**. Tanpa menghitung angka harga bajunya, manakah analisis yang benar mengenai urutan penerapan promo bagi pembeli?",
+          options: [
+            "Urutan mempengaruhi harga akhir! Jika Voucher dipotong dulu baru didiskon 20%, diskonnya dihitung dari harga yang sudah lebih kecil. Jika Diskon 20% dulu baru dikurangi Voucher Rp50.000, potongan totalnya lebih besar bagi pembeli.",
+            "Urutan sama sekali tidak berpengaruh karena diskon dan pengurangan bersifat komutatif.",
+            "Pembeli selalu rugi jika menggunakan voucher dan diskon sekaligus."
+          ],
+          correctIdx: 0,
+          explain: "Penalaran HOTS yang luar biasa! Karena \(D(x) = 0{,}8x\) dan \(V(x) = x - 50.000\), maka \((V \circ D)(x) = 0{,}8x - 50.000\), sedangkan \((D \circ V)(x) = 0{,}8(x - 50.000) = 0{,}8x - 40.000\). Terbukti urutan sangat penting!"
+        },
+        generalization: {
+          template: "Dalam memodelkan masalah kontekstual berantai, proses yang terjadi PERTAMA kali menjadi fungsi ... dan proses KEDUA menjadi fungsi ...",
+          options: ["dalam g(x), dan proses kedua menjadi fungsi luar f(x) pada f(g(x))", "luar f(x), dan proses pertama diabaikan", "identitas yang bernilai tetap"],
+          correctIdx: 0,
+          bookFormula: "Model Kontekstual Fungsi Komposisi:<br>Jika suatu besaran \\(x\\) mengalami Proses Pertama \\(g\\) lalu hasilnya mengalami Proses Kedua \\(f\\), maka hasil akhirnya dimodelkan oleh:<br>\\[ H(x) = (f \\circ g)(x) = f(g(x)) \\]"
+        },
+        quizzes: [
+          {
+            id: "Z6Q1",
+            level: "MOTS",
+            question: "Seorang pedagang muslim di Gorontalo menghitung penghasilan bersih bulanan dari omzet \\(x\\) (dalam juta rupiah) dengan dikurangi biaya operasional 4 juta: \\(g(x) = x - 4\\). Dari penghasilan bersih tersebut, ia menyisihkan infak/zakat sebesar 2,5% atau \\(f(y) = 0{,}025y\\). Jika omzet bulan ini \\(x = 24\\) juta rupiah, berapakah besar infak/zakat \\((f \\circ g)(24)\\) yang dikeluarkan?",
+            options: ["0,5 juta rupiah (Rp500.000)", "0,6 juta rupiah (Rp600.000)", "1 juta rupiah (Rp1.000.000)", "0,4 juta rupiah (Rp400.000)"],
+            correctIdx: 0,
+            hints: [
+              "Isyarat: Hitung dulu penghasilan bersih g(24), baru kalikan dengan 0,025.",
+              "Langkah awal: g(24) = 24 - 4 = 20 juta rupiah.",
+              "Contoh serupa: f(20) = 0,025 × 20 = 0,5 juta rupiah."
+            ],
+            feedback: "MasyaAllah, tepat! Penghasilan bersih g(24) = 24 - 4 = 20 juta. Besar zakat/infak f(20) = 0,025 × 20 = 0,5 juta rupiah (Rp500.000)."
+          },
+          {
+            id: "Z6Q2",
+            level: "HOTS",
+            question: "Laboratorium pangan mengonversi suhu ruang pengering dari skala Celcius \\((C)\\) ke Reamur dengan \\(R(C) = \\frac{4}{5}C\\), lalu sensor digital mengubah suhu Reamur \\((R)\\) menjadi tegangan listrik (mV) dengan aturan \\(V(R) = 10R + 5\\). Rumus komposisi \\((V \\circ R)(C)\\) dan nilainya saat \\(C = 25^\\circ\\text{C}\\) adalah...",
+            options: [
+              "V(C) = 8C + 5 dan nilainya 205 mV",
+              "V(C) = 8C + 50 dan nilainya 250 mV",
+              "V(C) = 10C + 4 dan nilainya 254 mV",
+              "V(C) = 4C + 5 dan nilainya 105 mV"
+            ],
+            correctIdx: 0,
+            hints: [
+              "Isyarat: Substitusikan R(C) = (4/5)C ke dalam V(R) = 10R + 5.",
+              "Langkah awal: V(R(C)) = 10 · (4/5 C) + 5 = 8C + 5.",
+              "Contoh serupa: Untuk C = 25, hitung 8(25) + 5."
+            ],
+            feedback: "Sempurna! (V ∘ R)(C) = 10(4/5 C) + 5 = 8C + 5. Untuk C = 25, diperoleh 8(25) + 5 = 205 mV."
+          },
+          {
+            id: "Z6Q3",
+            level: "HOTS",
+            question: "Sebuah koperasi siswa menerapkan tarif pengiriman barang: fungsi pertama \\(g(x)\\) menambahkan biaya pengemasan tetap Rp10.000 pada harga barang \\(x\\), dan fungsi kedua \\(f(y)\\) memberikan potongan diskon anggota sebesar 10% (sehingga membayar 90% atau \\(0{,}9y\\)). Mengapa \\((f \\circ g)(x)\\) dan \\((g \\circ f)(x)\\) memberikan total bayar yang berbeda?",
+            options: [
+              "Karena pada (f ∘ g)(x) biaya kemasan ikut didiskon 10%, sedangkan pada (g ∘ f)(x) biaya kemasan ditambahkan utuh setelah barang didiskon.",
+              "Karena diskon 10% nilainya selalu sama dengan Rp10.000 untuk semua harga barang.",
+              "Keduanya menghasilkan nilai yang persis sama untuk setiap nilai x."
+            ],
+            correctIdx: 0,
+            hints: [
+              "Isyarat: Bandingkan bentuk aljabar f(g(x)) = 0,9(x + 10.000) dengan g(f(x)) = 0,9x + 10.000.",
+              "Langkah awal: Pada 0,9(x + 10.000) = 0,9x + 9.000, biaya kemasannya ikut terpotong diskon.",
+              "Contoh serupa: Urutan proses menentukan komponen mana yang terkena persentase diskon."
+            ],
+            feedback: "Analisis yang sangat tajam! Pada (f ∘ g)(x) = 0,9(x + 10.000) = 0,9x + 9.000, biaya kemasan ikut terkena diskon 10%."
+          }
+        ]
+      }
+    ];
+
+    /* ==========================================================================
+       3. EFEK SUARA RINGAN (WEB AUDIO API SYNTHESIZER)
+       ========================================================================== */
+    let audioCtx = null;
+
+    function playSound(type) {
+      if (gameState.muted) return;
+      try {
+        if (!audioCtx) {
+          audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        }
+        if (audioCtx.state === "suspended") audioCtx.resume();
+
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+
+        const now = audioCtx.currentTime;
+        if (type === "click") {
+          osc.type = "sine";
+          osc.frequency.setValueAtTime(520, now);
+          gain.gain.setValueAtTime(0.08, now);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + 0.08);
+          osc.start(now);
+          osc.stop(now + 0.08);
+        } else if (type === "success") {
+          osc.type = "triangle";
+          osc.frequency.setValueAtTime(523.25, now);       // C5
+          osc.frequency.setValueAtTime(659.25, now + 0.1); // E5
+          osc.frequency.setValueAtTime(783.99, now + 0.2); // G5
+          gain.gain.setValueAtTime(0.12, now);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + 0.38);
+          osc.start(now);
+          osc.stop(now + 0.38);
+        } else if (type === "retry") {
+          osc.type = "sine";
+          osc.frequency.setValueAtTime(340, now);
+          osc.frequency.setValueAtTime(280, now + 0.12);
+          gain.gain.setValueAtTime(0.1, now);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + 0.28);
+          osc.start(now);
+          osc.stop(now + 0.28);
+        }
+      } catch (e) {
+        // Abaikan jika browser memblokir autoplay audio
+      }
+    }
+
+    function toggleMute() {
+      gameState.muted = !gameState.muted;
+      const btn = document.getElementById("btnAudioToggle");
+      btn.textContent = gameState.muted ? "🔇 Bisu" : "🔊 Suara";
+      saveLocalState();
+    }
+
+    /* ==========================================================================
+       4. PENYIMPANAN LOKAL & SINKRONISASI KE GOOGLE SPREADSHEET (OFFLINE-FIRST)
+       ========================================================================== */
+    function getAllLocalAccounts() {
+      try {
+        return JSON.parse(localStorage.getItem(STORAGE_KEY_ACCOUNTS) || "{}");
+      } catch (e) {
+        return {};
+      }
+    }
+
+    function saveLocalState() {
+      try {
+        localStorage.setItem(STORAGE_KEY_STATE, JSON.stringify(gameState));
+        if (gameState.nama) {
+          const accId = generateAccountId(gameState.nama);
+          gameState.sessionId = accId;
+          const allAccounts = getAllLocalAccounts();
+          allAccounts[accId] = gameState;
+          localStorage.setItem(STORAGE_KEY_ACCOUNTS, JSON.stringify(allAccounts));
+        }
+      } catch (e) {}
+      updateHUD();
+    }
+
+    function loadLocalState() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY_STATE);
+        if (raw) {
+          const parsed = JSON.parse(raw);
+          const def = createInitialState(parsed.nama || "");
+          gameState = {
+            ...def,
+            ...parsed,
+            zoneProgress: { ...def.zoneProgress, ...(parsed.zoneProgress || {}) }
+          };
+        }
+      } catch (e) {}
+    }
+
+    function renderSavedAccountsList() {
+      const wrap = document.getElementById("savedAccountsWrap");
+      const list = document.getElementById("savedAccountsList");
+      if (!wrap || !list) return;
+
+      const accounts = Object.values(getAllLocalAccounts());
+      if (accounts.length === 0) {
+        wrap.style.display = "none";
+        return;
+      }
+
+      wrap.style.display = "block";
+      list.innerHTML = accounts.map(acc => {
+        const stars = Object.values(acc.zoneProgress || {}).reduce((s, z) => s + (z.stars || 0), 0);
+        const safeName = (acc.nama || "").replace(/'/g, "\\'");
+        return `
+          <button type="button" class="btn btn-secondary btn-sm" onclick="quickLoginAccount('${safeName}')">
+            👤 ${acc.nama} (Zona ${acc.unlockedZone || 1} • ⭐${stars})
+          </button>
+        `;
+      }).join("");
+    }
+
+    function quickLoginAccount(nama) {
+      document.getElementById("inputNama").value = nama;
+      handleStartAdventure();
+    }
+
+    function logoutStudentAccount() {
+      playSound("click");
+      if (activeZoneSession) {
+        saveCurrentZoneStepProgress();
+      }
+      renderSavedAccountsList();
+      showScreen("screen-login");
+    }
+
+    async function fetchCloudAccountProgress(accId, nama) {
+      if (!APPS_SCRIPT_URL || APPS_SCRIPT_URL === "ISI_URL_WEB_APP") return null;
+      try {
+        const url = `${APPS_SCRIPT_URL}?action=GET_PROGRESS&sessionId=${encodeURIComponent(accId)}&nama=${encodeURIComponent(nama)}`;
+        const res = await fetch(url, { method: "GET" });
+        if (!res.ok) return null;
+        const data = await res.json();
+        if (data && data.status === "FOUND") return data;
+      } catch (e) {}
+      return null;
+    }
+
+    function setSyncStatus(status, label) {
+      const dot = document.getElementById("syncDot");
+      const txt = document.getElementById("syncText");
+      if (!dot || !txt) return;
+      dot.className = "sync-dot";
+      if (status === "pending") dot.classList.add("pending");
+      if (status === "offline") dot.classList.add("offline");
+      txt.textContent = label;
+    }
+
+    function enqueuePayload(actionType, dataObj) {
+      const item = {
+        action: actionType,
+        timestamp: new Date().toISOString(),
+        sessionId: gameState.sessionId,
+        nama: gameState.nama,
+        kelas: gameState.kelas,
+        payload: dataObj
+      };
+
+      let queue = [];
+      try {
+        queue = JSON.parse(localStorage.getItem(STORAGE_KEY_QUEUE) || "[]");
+      } catch (e) { queue = []; }
+      queue.push(item);
+      try {
+        localStorage.setItem(STORAGE_KEY_QUEUE, JSON.stringify(queue));
+      } catch (e) {}
+
+      flushOfflineQueue();
+    }
+
+    async function flushOfflineQueue() {
+      let queue = [];
+      try {
+        queue = JSON.parse(localStorage.getItem(STORAGE_KEY_QUEUE) || "[]");
+      } catch (e) { queue = []; }
+
+      if (queue.length === 0) {
+        setSyncStatus("ok", "Tersimpan");
+        return;
+      }
+
+      if (!APPS_SCRIPT_URL || APPS_SCRIPT_URL === "ISI_URL_WEB_APP") {
+        setSyncStatus("pending", `Lokal (${queue.length} antrean)`);
+        return;
+      }
+
+      setSyncStatus("pending", "Menyinkronkan...");
+      try {
+        const response = await fetch(APPS_SCRIPT_URL, {
+          method: "POST",
+          headers: { "Content-Type": "text/plain;charset=utf-8" },
+          body: JSON.stringify({ batch: queue })
+        });
+        if (response.ok) {
+          localStorage.setItem(STORAGE_KEY_QUEUE, "[]");
+          setSyncStatus("ok", "Tersimpan di Cloud");
+        } else {
+          setSyncStatus("offline", `Menunggu (${queue.length})`);
+        }
+      } catch (err) {
+        setSyncStatus("offline", `Offline (${queue.length})`);
+      }
+    }
+
+    window.addEventListener("online", () => flushOfflineQueue());
+
+    /* ==========================================================================
+       5. NAVIGASI LAYAR & HUD
+       ========================================================================== */
+    function showScreen(screenId) {
+      playSound("click");
+      document.querySelectorAll(".screen").forEach(s => s.classList.remove("active"));
+      const target = document.getElementById(screenId);
+      if (target) target.classList.add("active");
+      window.scrollTo({ top: 0, behavior: "smooth" });
+      typesetMath();
+    }
+
+    function typesetMath() {
+      if (window.MathJax && window.MathJax.typesetPromise) {
+        window.MathJax.typesetPromise().catch(() => {});
+      }
+    }
+
+    function getSelectedCharacter() {
+      return CHARACTERS.find(c => c.id === gameState.charId) || CHARACTERS[0];
+    }
+
+    function getTotalStars() {
+      return Object.values(gameState.zoneProgress).reduce((acc, z) => acc + (z.stars || 0), 0);
+    }
+
+    function updateHUD() {
+      const charObj = getSelectedCharacter();
+      const hasPlayer = Boolean(gameState.nama);
+      document.getElementById("hudPlayer").style.display = hasPlayer ? "flex" : "none";
+      document.getElementById("hudEnergyWrap").style.display = hasPlayer ? "flex" : "none";
+      document.getElementById("hudStarsWrap").style.display = hasPlayer ? "flex" : "none";
+      const btnSwitch = document.getElementById("btnSwitchAccount");
+      if (btnSwitch) btnSwitch.style.display = hasPlayer ? "inline-flex" : "none";
+
+      if (hasPlayer) {
+        document.getElementById("hudAvatar").textContent = charObj.avatar;
+        document.getElementById("hudName").textContent = `${gameState.nama.split(" ")[0]} (${gameState.kelas})`;
+        document.getElementById("hudEnergy").textContent = `${gameState.energy}/5`;
+        document.getElementById("hudStars").textContent = getTotalStars();
+      }
+    }
+
+    function awardBadge(badgeId) {
+      if (!gameState.badges.includes(badgeId)) {
+        gameState.badges.push(badgeId);
+        saveLocalState();
+      }
+    }
+
+    /* ==========================================================================
+       6. ALUR LAYAR 1 - 4 (LOGIN, KARAKTER, WELCOME, NARASI)
+       ========================================================================== */
+    async function handleStartAdventure() {
+      const namaInput = document.getElementById("inputNama").value.trim();
+      const errBox = document.getElementById("loginError");
+      const btnStart = document.getElementById("btnStartAdventure");
+
+      if (!namaInput) {
+        errBox.style.display = "block";
+        errBox.textContent = "Mohon pilih namamu dari daftar terlebih dahulu ya, Penjelajah!";
+        playSound("retry");
+        return;
+      }
+
+      errBox.style.display = "none";
+      const accId = generateAccountId(namaInput);
+      const allAccounts = getAllLocalAccounts();
+
+      if (btnStart) {
+        btnStart.disabled = true;
+        btnStart.textContent = "⏳ Memuat Akun Penjelajah...";
+      }
+
+      // 1. Cek apakah akun sudah tersimpan di perangkat lokal
+      if (allAccounts[accId]) {
+        const saved = allAccounts[accId];
+        const def = createInitialState(namaInput);
+        gameState = {
+          ...def,
+          ...saved,
+          nama: namaInput,
+          kelas: "XI",
+          sessionId: accId,
+          zoneProgress: { ...def.zoneProgress, ...(saved.zoneProgress || {}) }
+        };
+      } else {
+        gameState = createInitialState(namaInput);
+      }
+
+      // 2. Coba pulihkan progres dari Google Spreadsheet jika siswa login dari perangkat berbeda
+      const cloudData = await fetchCloudAccountProgress(accId, namaInput);
+      if (cloudData && cloudData.siswa) {
+        gameState.onboardingDone = true;
+        const foundChar = CHARACTERS.find(c => c.name === cloudData.siswa.karakter || c.id === cloudData.siswa.karakter);
+        if (foundChar) gameState.charId = foundChar.id;
+        if (cloudData.siswa.waktuMulai) gameState.waktuMulai = cloudData.siswa.waktuMulai;
+        if (cloudData.siswa.waktuSelesai) gameState.waktuSelesai = cloudData.siswa.waktuSelesai;
+        if (cloudData.siswa.lencana) {
+          const cloudBadges = String(cloudData.siswa.lencana).split(",").map(s => s.trim()).filter(Boolean);
+          cloudBadges.forEach(b => {
+            if (!gameState.badges.includes(b)) gameState.badges.push(b);
+          });
+        }
+        if (Array.isArray(cloudData.progresZona)) {
+          cloudData.progresZona.forEach(pz => {
+            const zid = Number(pz.zona);
+            if (gameState.zoneProgress[zid]) {
+              const isDone = pz.status === "Selesai";
+              gameState.zoneProgress[zid].completed = gameState.zoneProgress[zid].completed || isDone;
+              gameState.zoneProgress[zid].stars = Math.max(gameState.zoneProgress[zid].stars || 0, Number(pz.bintang) || 0);
+              gameState.zoneProgress[zid].bestScore = Math.max(gameState.zoneProgress[zid].bestScore || 0, Number(pz.skor) || 0);
+              gameState.zoneProgress[zid].attempts = Math.max(gameState.zoneProgress[zid].attempts || 0, Number(pz.jumlahPercobaan) || 1);
+              if (isDone && zid >= gameState.unlockedZone && zid < 6) {
+                gameState.unlockedZone = zid + 1;
+              }
+            }
+          });
+        }
+      }
+
+      if (btnStart) {
+        btnStart.disabled = false;
+        btnStart.textContent = "🚀 Masuk / Lanjutkan Petualangan";
+      }
+
+      saveLocalState();
+
+      // Jika akun siswa sudah pernah memilih karakter / punya progres, langsung arahkan ke Peta Dunia!
+      const hasProgress = gameState.onboardingDone || gameState.unlockedZone > 1 || getTotalStars() > 0;
+      if (hasProgress) {
+        enterWorldMap();
+      } else {
+        renderCharacterGrid();
+        showScreen("screen-character");
+      }
+    }
+
+    function renderCharacterGrid() {
+      const grid = document.getElementById("charGrid");
+      grid.innerHTML = CHARACTERS.map(c => `
+        <div class="char-card ${gameState.charId === c.id ? 'selected' : ''}" onclick="selectCharacter('${c.id}')">
+          <div class="char-avatar">${c.avatar}</div>
+          <div style="font-weight:800; color:#fff; font-size:1.05rem;">${c.name}</div>
+          <p style="font-size:0.9rem; margin:0.3rem 0;">${c.trait}</p>
+          <div style="font-size:0.82rem; color:var(--primary); font-style:italic;">"${c.quote}"</div>
+        </div>
+      `).join("");
+    }
+
+    function selectCharacter(id) {
+      playSound("click");
+      gameState.charId = id;
+      renderCharacterGrid();
+    }
+
+    function confirmCharacter() {
+      const charObj = getSelectedCharacter();
+      gameState.onboardingDone = true;
+      document.getElementById("welcomeCharAvatar").textContent = charObj.avatar;
+      document.getElementById("welcomeTitle").textContent = `Selamat Datang, ${gameState.nama}!`;
+      document.getElementById("welcomeTrait").innerHTML = `Kamu berpetualang bersama <strong>${charObj.name}</strong> — <em>"${charObj.quote}"</em>`;
+
+      // Catat data awal siswa ke antrean Spreadsheet
+      enqueuePayload("UPSERT_SISWA", {
+        karakter: charObj.name,
+        waktuMulai: gameState.waktuMulai,
+        waktuSelesai: gameState.waktuSelesai,
+        totalBintang: getTotalStars(),
+        lencana: gameState.badges.join(", ")
+      });
+
+      saveLocalState();
+      showScreen("screen-welcome");
+    }
+
+    let typewriterTimer = null;
+    const STORY_TEXT = "Syukurlah kamu tiba! Di Pulau Fungsi ini, seluruh proses pengolahan hasil bumi—mulai dari pemipilan jagung Binte, pemintalan benang Sulam Karawo, hingga distribusi koperasi—bekerja menggunakan RANTAI MESIN FUNGSI. Namun tadi pagi, jembatan penghubung antar-mesin terputus karena warga lupa aturan penggabungan fungsi! Mari kita jelajahi 6 Zona Pulau Fungsi, temukan kembali rumusnya secara mandiri, dan nyalakan semua mesinnya!";
+
+    function startOpeningStory() {
+      showScreen("screen-story");
+      const target = document.getElementById("typewriterText");
+      target.textContent = "";
+      let idx = 0;
+      if (typewriterTimer) clearInterval(typewriterTimer);
+      typewriterTimer = setInterval(() => {
+        if (idx < STORY_TEXT.length) {
+          target.textContent += STORY_TEXT.charAt(idx);
+          idx++;
+        } else {
+          clearInterval(typewriterTimer);
+        }
+      }, 22);
+    }
+
+    function skipTypewriter() {
+      if (typewriterTimer) clearInterval(typewriterTimer);
+      document.getElementById("typewriterText").textContent = STORY_TEXT;
+    }
+
+    /* ==========================================================================
+       7. LAYAR 5: PETA DUNIA INTERAKTIF
+       ========================================================================== */
+    function enterWorldMap() {
+      if (typewriterTimer) clearInterval(typewriterTimer);
+      renderWorldMap();
+      showScreen("screen-map");
+    }
+
+    function renderWorldMap() {
+      const grid = document.getElementById("zonesGrid");
+      const charObj = getSelectedCharacter();
+
+      let completedCount = 0;
+      grid.innerHTML = ZONES_DATA.map(z => {
+        const prog = gameState.zoneProgress[z.id];
+        const isUnlocked = z.id <= gameState.unlockedZone;
+        const isDone = prog.completed;
+        if (isDone) completedCount++;
+
+        const statusClass = isDone ? "completed" : (isUnlocked ? "unlocked" : "locked");
+        const starsStr = "★".repeat(prog.stars) + "☆".repeat(3 - prog.stars);
+        const isCurrentPos = (z.id === gameState.unlockedZone) || (z.id === 6 && isDone);
+        const savedStep = prog.lastStep || 1;
+        const btnLabel = isDone
+          ? "Ulangi Zona"
+          : (isUnlocked ? (savedStep > 1 ? `Lanjutkan (Tahap ${savedStep}/6) ➡️` : "Masuk Zona ➡️") : "Terkunci");
+
+        return `
+          <div class="zone-node ${statusClass}" onclick="${isUnlocked ? `openZone(${z.id})` : ''}">
+            <div>
+              <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.4rem;">
+                <span style="font-size:0.8rem; font-weight:800; color:var(--info); text-transform:uppercase;">
+                  ${isDone ? '✅ Tuntas' : (isUnlocked ? (savedStep > 1 ? `⏳ Tahap ${savedStep}/6` : '🔓 Terbuka') : '🔒 Terkunci')}
+                </span>
+                <span class="stars-display">${starsStr}</span>
+              </div>
+              <h3 style="color:#fff; margin-bottom:0.35rem;">${z.title}</h3>
+              <p style="font-size:0.88rem; margin-bottom:0.75rem;">${z.subtitle}</p>
+            </div>
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-top:0.5rem;">
+              <span style="font-size:1.3rem;">${isCurrentPos ? charObj.avatar : '📍'}</span>
+              <button class="btn ${isUnlocked ? 'btn-primary' : 'btn-secondary'} btn-sm" ${!isUnlocked ? 'disabled' : ''}>
+                ${btnLabel}
+              </button>
+            </div>
+          </div>
+        `;
+      }).join("");
+
+      const pct = Math.round((completedCount / ZONES_DATA.length) * 100);
+      document.getElementById("mapProgressBar").style.width = `${pct}%`;
+
+      // Render Lencana
+      const badgeContainer = document.getElementById("badgeContainer");
+      badgeContainer.innerHTML = BADGES.map(b => {
+        const earned = gameState.badges.includes(b.id);
+        return `
+          <div class="badge-item ${earned ? 'earned' : ''}" title="${b.desc}">
+            <span>${b.icon}</span>
+            <span>${b.name}</span>
+          </div>
+        `;
+      }).join("");
+
+      // Tampilkan tombol sertifikat jika minimal Zona 6 selesai
+      document.getElementById("finalScreenBtnWrap").style.display = completedCount === 6 ? "block" : "none";
+    }
+
+    /* ==========================================================================
+       8. LAYAR 6: MESIN DISCOVERY LEARNING DI SETIAP ZONA
+       ========================================================================== */
+    let activeZoneSession = null;
+
+    const STEP_NAMES = [
+      "1. Stimulasi",
+      "2. Identifikasi",
+      "3. Eksperimen",
+      "4. Olah Data",
+      "5. Pembuktian",
+      "6. Generalisasi & Kuis"
+    ];
+
+    function openZone(zoneId) {
+      const zone = ZONES_DATA.find(z => z.id === zoneId);
+      if (!zone) return;
+
+      const prog = gameState.zoneProgress[zone.id] || {};
+      const initialStep = (!prog.completed && prog.lastStep && prog.lastStep >= 1 && prog.lastStep <= 6)
+        ? prog.lastStep
+        : 1;
+
+      activeZoneSession = {
+        zoneId: zone.id,
+        startTime: Date.now(),
+        step: initialStep, // 1..6 (melanjutkan tahap terakhir jika belum selesai)
+        maxReachedStep: initialStep,
+        goalSelected: "",
+        simRuns: [],
+        quizIndex: 0,
+        quizMistakes: 0,
+        hintsUsedInZone: 0,
+        questionAttempts: {},
+        questionHints: {}
+      };
+
+      document.getElementById("zoneHeaderBadge").textContent = `Eksplorasi Zona ${zone.id} dari 6`;
+      document.getElementById("zoneTitle").textContent = zone.title;
+      renderZoneStep();
+      showScreen("screen-zone");
+    }
+
+    function saveCurrentZoneStepProgress() {
+      if (!activeZoneSession) return;
+      const zid = activeZoneSession.zoneId;
+      if (gameState.zoneProgress[zid] && !gameState.zoneProgress[zid].completed) {
+        gameState.zoneProgress[zid].lastStep = activeZoneSession.step;
+        saveLocalState();
+      }
+    }
+
+    function renderStepPills() {
+      const indicator = document.getElementById("stepIndicator");
+      indicator.innerHTML = STEP_NAMES.map((name, idx) => {
+        const stepNum = idx + 1;
+        let cls = "step-pill";
+        const canJump = stepNum < activeZoneSession.step || stepNum <= (activeZoneSession.maxReachedStep || 1);
+        if (stepNum === activeZoneSession.step) cls += " active";
+        else if (canJump) cls += " done";
+        const clickHandler = canJump ? `onclick="goToZoneStep(${stepNum})" title="Klik untuk kembali ke ${name}"` : "";
+        return `<div class="${cls}" ${clickHandler}>${name}</div>`;
+      }).join("");
+    }
+
+    function goToZoneStep(stepNumber) {
+      if (!activeZoneSession) return;
+      if (stepNumber >= 1 && stepNumber <= (activeZoneSession.maxReachedStep || activeZoneSession.step)) {
+        playSound("click");
+        activeZoneSession.step = stepNumber;
+        saveCurrentZoneStepProgress();
+        renderZoneStep();
+      }
+    }
+
+    function prevZoneStep() {
+      if (!activeZoneSession || activeZoneSession.step <= 1) return;
+      playSound("click");
+      activeZoneSession.step--;
+      saveCurrentZoneStepProgress();
+      renderZoneStep();
+    }
+
+    function getStepBackNavigationHTML(extraRightButtonHtml = "") {
+      if (!activeZoneSession || activeZoneSession.step <= 1) {
+        return extraRightButtonHtml ? `<div class="step-nav-bar"><div></div>${extraRightButtonHtml}</div>` : "";
+      }
+      const prevName = STEP_NAMES[activeZoneSession.step - 2];
+      return `
+        <div class="step-nav-bar">
+          <button type="button" class="btn btn-secondary btn-sm" onclick="prevZoneStep()">
+            ⬅️ Kembali ke Tahap Sebelumnya (${prevName})
+          </button>
+          <div>${extraRightButtonHtml}</div>
+        </div>
+      `;
+    }
+
+    function renderZoneStep() {
+      renderStepPills();
+      saveCurrentZoneStepProgress();
+      const zone = ZONES_DATA.find(z => z.id === activeZoneSession.zoneId);
+      const container = document.getElementById("zoneStepContent");
+      const charObj = getSelectedCharacter();
+      const step = activeZoneSession.step;
+
+      if (step === 1) {
+        // TAHAP 1: KESADARAN BELAJAR (MINDFUL) + STIMULASI
+        container.innerHTML = `
+          <div class="npc-dialog">
+            <div class="npc-avatar">${charObj.avatar}</div>
+            <div>
+              <strong style="color:var(--primary);">${charObj.name} – Niat Belajar Berkesadaran (Mindful Learning)</strong>
+              <p style="margin-bottom:0.35rem;">Sebelum menyalakan mesin di zona ini, mari tetapkan tujuan kecilmu hari ini:</p>
+              <div style="background:#0f172a; padding:0.65rem 0.9rem; border-radius:8px; border:1px solid var(--info); color:#fff; font-weight:600;">
+                🎯 "Hari ini aku ingin paham: ${zone.goalPrompt}"
+              </div>
+            </div>
+          </div>
+
+          <h3>🌟 Tahap 1: Stimulasi (Situasi Pemantik)</h3>
+          <p style="color:#fff; font-size:1.05rem;">${zone.stimulation}</p>
+
+          <button class="btn btn-primary" onclick="nextZoneStep()">
+            🔍 Lanjut ke Identifikasi Masalah ➡️
+          </button>
+        `;
+      } else if (step === 2) {
+        // TAHAP 2: IDENTIFIKASI MASALAH (PERTANYAAN DETEKTIF)
+        container.innerHTML = `
+          <h3>🕵️ Tahap 2: Identifikasi Masalah (Pertanyaan Detektif)</h3>
+          <p>${zone.detectiveQ.prompt}</p>
+          <div class="options-list">
+            ${zone.detectiveQ.options.map((opt, i) => `
+              <button class="option-btn" onclick="checkDetectiveQuestion(${i})">
+                <strong>${String.fromCharCode(65 + i)}.</strong> ${opt}
+              </button>
+            `).join("")}
+          </div>
+          <div id="detectiveFeedback"></div>
+          ${getStepBackNavigationHTML()}
+        `;
+      } else if (step === 3) {
+        // TAHAP 3: PENGUMPULAN DATA (SIMULATOR MESIN INTERAKTIF)
+        const mc = zone.machineConfig;
+        container.innerHTML = `
+          <h3>⚙️ Tahap 3: Pengumpulan Data (Simulator Mesin Fungsi)</h3>
+          <p>${mc.desc}</p>
+
+          <div class="machine-box">
+            <div style="max-width:260px; margin:0 auto 1rem;">
+              <label for="simInputX">Masukkan Nilai Input \\(x\\):</label>
+              <div style="display:flex; gap:0.5rem;">
+                <input type="number" id="simInputX" value="3" />
+                <button class="btn btn-accent" onclick="runMachineSimulation()">▶️ Jalankan</button>
+              </div>
+            </div>
+
+            <div class="machine-pipeline" id="simPipeline">
+              <div class="machine-unit">Input x = ?</div>
+              <div class="machine-arrow">➡️</div>
+              <div class="machine-unit">${mc.label1}</div>
+              ${mc.type === "double" ? `
+                <div class="machine-arrow">➡️</div>
+                <div class="machine-unit">${mc.label2}</div>
+              ` : ''}
+              <div class="machine-arrow">➡️</div>
+              <div class="machine-unit" style="border-color:var(--accent);">Output = ?</div>
+            </div>
+
+            <div id="simHistoryLog" style="margin-top:0.75rem; font-size:0.9rem; color:var(--text-muted);">
+              Belum ada data uji coba. Klik <strong>Jalankan</strong> dengan beberapa angka berbeda!
+            </div>
+          </div>
+
+          ${getStepBackNavigationHTML(`
+            <button class="btn btn-primary" onclick="nextZoneStep()">
+              📊 Lanjut ke Pengolahan Data ➡️
+            </button>
+          `)}
+        `;
+        runMachineSimulation();
+      } else if (step === 4) {
+        // TAHAP 4: PENGOLAHAN DATA (POLA & DUGAAN)
+        container.innerHTML = `
+          <h3>📐 Tahap 4: Pengolahan Data & Menemukan Pola</h3>
+          <p style="color:#fff;">${zone.dataProcessing.prompt}</p>
+
+          <div class="form-group" style="max-width:320px;">
+            <label for="inputDataProc">Ketik Jawaban Angkamu:</label>
+            <input type="number" id="inputDataProc" placeholder="Contoh: 15" />
+          </div>
+
+          <div style="display:flex; gap:0.65rem; flex-wrap:wrap;">
+            <button class="btn btn-primary" onclick="checkDataProcessing()">✔️ Periksa Dugaan</button>
+            <button class="btn btn-secondary btn-sm" onclick="showDataProcHint()">💡 Lihat Petunjuk</button>
+          </div>
+
+          <div id="dataProcFeedback"></div>
+          ${getStepBackNavigationHTML()}
+        `;
+      } else if (step === 5) {
+        // TAHAP 5: PEMBUKTIAN & ZONA BELAJAR DARI KESALAHAN
+        const ver = zone.verification;
+        container.innerHTML = `
+          <h3>🔬 Tahap 5: Pembuktian & ${ver.misconceptionTitle}</h3>
+          <div style="background:#0f172a; padding:1rem; border-radius:12px; border:1px solid var(--warning); margin-bottom:1rem;">
+            <p style="color:#fff; margin-bottom:0;">${ver.story}</p>
+          </div>
+          <div class="options-list">
+            ${ver.options.map((opt, i) => `
+              <button class="option-btn" onclick="checkVerificationStep(${i})">
+                <strong>${String.fromCharCode(65 + i)}.</strong> ${opt}
+              </button>
+            `).join("")}
+          </div>
+          <div id="verificationFeedback"></div>
+          ${getStepBackNavigationHTML()}
+        `;
+      } else if (step === 6) {
+        // TAHAP 6: GENERALISASI -> BUKU PENEMUAN -> KUIS BERJENJANG -> REFLEKSI
+        renderGeneralizationAndQuiz();
+      }
+
+      typesetMath();
+    }
+
+    function nextZoneStep() {
+      playSound("click");
+      activeZoneSession.step++;
+      if (activeZoneSession.step > (activeZoneSession.maxReachedStep || 1)) {
+        activeZoneSession.maxReachedStep = activeZoneSession.step;
+      }
+      saveCurrentZoneStepProgress();
+      renderZoneStep();
+    }
+
+    function checkDetectiveQuestion(idx) {
+      const zone = ZONES_DATA.find(z => z.id === activeZoneSession.zoneId);
+      const fb = document.getElementById("detectiveFeedback");
+      if (idx === zone.detectiveQ.correctIdx) {
+        playSound("success");
+        fb.innerHTML = `
+          <div class="feedback-box success">
+            <strong>🌟 Pertanyaan Detektif yang Tepat!</strong>
+            <p style="margin:0.3rem 0 0.75rem; color:#fff;">${zone.detectiveQ.explain}</p>
+            <button class="btn btn-accent btn-sm" onclick="nextZoneStep()">Lanjut ke Eksperimen Mesin ➡️</button>
+          </div>
+        `;
+      } else {
+        playSound("retry");
+        fb.innerHTML = `
+          <div class="feedback-box retry">
+            <strong>🌱 Kamu belum menemukan pertanyaan kuncinya!</strong>
+            <p style="margin:0.3rem 0 0; color:#fff;">Coba pilih pertanyaan yang menyelidiki hubungan matematika antara masukan (input) dan keluaran (output) mesin.</p>
+          </div>
+        `;
+      }
+      typesetMath();
+    }
+
+    function runMachineSimulation() {
+      playSound("click");
+      const zone = ZONES_DATA.find(z => z.id === activeZoneSession.zoneId);
+      const mc = zone.machineConfig;
+      const xVal = parseFloat(document.getElementById("simInputX").value) || 0;
+
+      const out1 = mc.fn1(xVal);
+      const finalOut = mc.type === "double" ? mc.fn2(out1) : out1;
+
+      const pipe = document.getElementById("simPipeline");
+      pipe.innerHTML = `
+        <div class="machine-unit">Input x = <strong>${xVal}</strong></div>
+        <div class="machine-arrow">➡️</div>
+        <div class="machine-unit">${mc.label1}<br><span style="color:var(--info)">Hasil: ${out1}</span></div>
+        ${mc.type === "double" ? `
+          <div class="machine-arrow">➡️</div>
+          <div class="machine-unit">${mc.label2}<br><span style="color:var(--primary)">Hasil: ${finalOut}</span></div>
+        ` : ''}
+        <div class="machine-arrow">➡️</div>
+        <div class="machine-unit" style="border-color:var(--accent); color:var(--accent);">Output Akhir = <strong>${finalOut}</strong></div>
+      `;
+
+      activeZoneSession.simRuns.push(`x=${xVal} → Output=${finalOut}`);
+      const logEl = document.getElementById("simHistoryLog");
+      logEl.innerHTML = `<strong>Catatan Eksperimenmu:</strong> ` + activeZoneSession.simRuns.slice(-5).join(" | ");
+    }
+
+    function showDataProcHint() {
+      playSound("click");
+      const zone = ZONES_DATA.find(z => z.id === activeZoneSession.zoneId);
+      const fb = document.getElementById("dataProcFeedback");
+      fb.innerHTML = `<div class="hint-box">💡 <strong>Petunjuk Strategi:</strong> ${zone.dataProcessing.hint}</div>`;
+      typesetMath();
+    }
+
+    function checkDataProcessing() {
+      const zone = ZONES_DATA.find(z => z.id === activeZoneSession.zoneId);
+      const val = parseFloat(document.getElementById("inputDataProc").value);
+      const fb = document.getElementById("dataProcFeedback");
+
+      if (val === zone.dataProcessing.answer) {
+        playSound("success");
+        awardBadge("penemu_pola");
+        fb.innerHTML = `
+          <div class="feedback-box success">
+            <strong>🎉 Pola Berhasil Ditemukan!</strong>
+            <p style="margin:0.3rem 0 0.75rem; color:#fff;">Perhitunganmu sangat cermat. Sekarang mari kita uji bukti dan analisis kesalahan umum di tahap berikutnya!</p>
+            <button class="btn btn-accent btn-sm" onclick="nextZoneStep()">Lanjut ke Pembuktian ➡️</button>
+          </div>
+        `;
+      } else {
+        playSound("retry");
+        fb.innerHTML = `
+          <div class="feedback-box retry">
+            <strong>🌱 Belum tepat, ayo coba strategi lain!</strong>
+            <p style="margin:0.3rem 0 0; color:#fff;">${zone.dataProcessing.hint} Kamu juga bisa kembali mencoba angka tersebut di Simulator Mesin.</p>
+          </div>
+        `;
+      }
+      typesetMath();
+    }
+
+    function checkVerificationStep(idx) {
+      const zone = ZONES_DATA.find(z => z.id === activeZoneSession.zoneId);
+      const fb = document.getElementById("verificationFeedback");
+      if (idx === zone.verification.correctIdx) {
+        playSound("success");
+        awardBadge("detektif_kesalahan");
+        fb.innerHTML = `
+          <div class="feedback-box success">
+            <strong>🕵️ Analisis yang Tajam!</strong>
+            <p style="margin:0.3rem 0 0.75rem; color:#fff;">${zone.verification.explain}</p>
+            <button class="btn btn-accent btn-sm" onclick="nextZoneStep()">Buka Tahap Generalisasi ➡️</button>
+          </div>
+        `;
+      } else {
+        playSound("retry");
+        fb.innerHTML = `
+          <div class="feedback-box retry">
+            <strong>🌱 Belum tepat!</strong>
+            <p style="margin:0.3rem 0 0; color:#fff;">Perhatikan kembali urutan substitusi dan tanda kurung pada langkah pengerjaan di atas.</p>
+          </div>
+        `;
+      }
+      typesetMath();
+    }
+
+    /* ==========================================================================
+       9. TAHAP 6: GENERALISASI, BUKU PENEMUAN, KUIS BERJENJANG & REFLEKSI
+       ========================================================================== */
+    function renderGeneralizationAndQuiz() {
+      const zone = ZONES_DATA.find(z => z.id === activeZoneSession.zoneId);
+      const container = document.getElementById("zoneStepContent");
+
+      container.innerHTML = `
+        <h3>📖 Tahap 6: Generalisasi & Buku Penemuan</h3>
+        <p>Lengkapi kalimat kesimpulan berikut berdasarkan eksperimen yang baru saja kamu lakukan:</p>
+        <div style="background:#0f172a; padding:1rem; border-radius:12px; border:1px solid var(--border); margin-bottom:1rem; color:#fff; font-weight:600;">
+          "${zone.generalization.template}"
+        </div>
+        <div class="options-list">
+          ${zone.generalization.options.map((opt, i) => `
+            <button class="option-btn" onclick="checkGeneralization(${i})">
+              <strong>${String.fromCharCode(65 + i)}.</strong> ${opt}
+            </button>
+          `).join("")}
+        </div>
+        <div id="genResultArea"></div>
+        ${getStepBackNavigationHTML()}
+      `;
+      typesetMath();
+    }
+
+    function checkGeneralization(idx) {
+      const zone = ZONES_DATA.find(z => z.id === activeZoneSession.zoneId);
+      const area = document.getElementById("genResultArea");
+
+      if (idx === zone.generalization.correctIdx) {
+        playSound("success");
+        area.innerHTML = `
+          <div class="discovery-book">
+            <h3 style="color:var(--primary); margin-bottom:0.4rem;">✨ BUKU PENEMUAN TERBUKA!</h3>
+            <p style="color:#fff; margin-bottom:0.5rem;">Selamat! Dari hasil penyelidikanmu sendiri, kamu telah menemukan konsep resmi berikut:</p>
+            <div style="background:rgba(15,23,42,0.85); padding:1rem; border-radius:10px; color:#fff;">
+              ${zone.generalization.bookFormula}
+            </div>
+            <div style="margin-top:1rem;">
+              <button class="btn btn-primary" onclick="startZoneQuizzes()">🎯 Mulai Tantangan Soal Berjenjang ➡️</button>
+            </div>
+          </div>
+        `;
+      } else {
+        playSound("retry");
+        area.innerHTML = `
+          <div class="feedback-box retry">
+            <strong>🌱 Sedikit lagi!</strong> Ingat kembali mesin mana yang memproses input lebih dulu saat kita melakukan simulasi tadi.
+          </div>
+        `;
+      }
+      typesetMath();
+    }
+
+    function startZoneQuizzes() {
+      activeZoneSession.quizIndex = 0;
+      renderCurrentQuizQuestion();
+    }
+
+    function renderCurrentQuizQuestion() {
+      const zone = ZONES_DATA.find(z => z.id === activeZoneSession.zoneId);
+      const q = zone.quizzes[activeZoneSession.quizIndex];
+      const container = document.getElementById("zoneStepContent");
+      const charObj = getSelectedCharacter();
+
+      if (!activeZoneSession.questionAttempts[q.id]) {
+        activeZoneSession.questionAttempts[q.id] = 0;
+        activeZoneSession.questionHints[q.id] = 0;
+      }
+
+      // Acak tampilan opsi dengan tetap menyimpan indeks asli
+      const indexedOptions = q.options.map((text, origIdx) => ({ text, origIdx }));
+      for (let i = indexedOptions.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [indexedOptions[i], indexedOptions[j]] = [indexedOptions[j], indexedOptions[i]];
+      }
+
+      container.innerHTML = `
+        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:0.5rem; margin-bottom:0.75rem;">
+          <span style="background:rgba(56,189,248,0.18); color:var(--info); padding:0.25rem 0.75rem; border-radius:99px; font-weight:700; font-size:0.85rem;">
+            Tantangan Soal ${activeZoneSession.quizIndex + 1} dari ${zone.quizzes.length} • Level Kognitif: ${q.level}
+          </span>
+          <div style="display:flex; gap:0.4rem; flex-wrap:wrap;">
+            <button class="btn btn-secondary btn-sm" onclick="showQuizHint(1)">💡 Petunjuk 1 (Isyarat)</button>
+            <button class="btn btn-secondary btn-sm" onclick="showQuizHint(2)">🧭 Petunjuk 2 (Langkah)</button>
+            <button class="btn btn-secondary btn-sm" onclick="showQuizHint(3)">📘 Petunjuk 3 (Contoh)</button>
+          </div>
+        </div>
+
+        <div class="card" style="background:#0f172a; margin-bottom:1rem;">
+          <p style="color:#fff; font-size:1.08rem; font-weight:600; margin-bottom:0;">${q.question}</p>
+        </div>
+
+        <div id="quizHintBox"></div>
+
+        <div class="options-list">
+          ${indexedOptions.map((item, displayIdx) => `
+            <button class="option-btn" onclick="submitQuizAnswer(${item.origIdx}, '${ item.text.replace(/'/g, "\\'") }')">
+              <strong>${String.fromCharCode(65 + displayIdx)}.</strong> ${item.text}
+            </button>
+          `).join("")}
+        </div>
+
+        <div id="quizFeedbackArea"></div>
+
+        <div class="npc-dialog" style="margin-top:1rem;">
+          <div class="npc-avatar">${charObj.avatar}</div>
+          <div>
+            <strong style="color:var(--primary);">${charObj.name}</strong>
+            <p style="margin:0; font-size:0.92rem;">"${charObj.quote}"</p>
+          </div>
+        </div>
+
+        <div class="step-nav-bar">
+          <button type="button" class="btn btn-secondary btn-sm" onclick="${activeZoneSession.quizIndex > 0 ? 'prevQuizQuestion()' : 'renderGeneralizationAndQuiz()'}">
+            ⬅️ ${activeZoneSession.quizIndex > 0 ? 'Kembali ke Soal Sebelumnya' : 'Kembali ke Buku Penemuan'}
+          </button>
+          <button type="button" class="btn btn-secondary btn-sm" onclick="prevZoneStep()">
+            🔬 Kembali ke Tahap 5 (Pembuktian)
+          </button>
+        </div>
+      `;
+      typesetMath();
+    }
+
+    function prevQuizQuestion() {
+      if (activeZoneSession && activeZoneSession.quizIndex > 0) {
+        playSound("click");
+        activeZoneSession.quizIndex--;
+        renderCurrentQuizQuestion();
+      }
+    }
+
+    function showQuizHint(level) {
+      playSound("click");
+      const zone = ZONES_DATA.find(z => z.id === activeZoneSession.zoneId);
+      const q = zone.quizzes[activeZoneSession.quizIndex];
+
+      activeZoneSession.hintsUsedInZone++;
+      if (level > (activeZoneSession.questionHints[q.id] || 0)) {
+        activeZoneSession.questionHints[q.id] = level;
+      }
+      awardBadge("pemburu_petunjuk");
+
+      const hintText = q.hints[level - 1] || q.hints[0];
+      const box = document.getElementById("quizHintBox");
+      box.innerHTML = `<div class="hint-box"><strong>Petunjuk Level ${level}:</strong> ${hintText}</div>`;
+      typesetMath();
+    }
+
+    function submitQuizAnswer(chosenOrigIdx, chosenText) {
+      const zone = ZONES_DATA.find(z => z.id === activeZoneSession.zoneId);
+      const q = zone.quizzes[activeZoneSession.quizIndex];
+      const fbArea = document.getElementById("quizFeedbackArea");
+
+      activeZoneSession.questionAttempts[q.id] = (activeZoneSession.questionAttempts[q.id] || 0) + 1;
+      const attemptCount = activeZoneSession.questionAttempts[q.id];
+      const isCorrect = chosenOrigIdx === q.correctIdx;
+
+      // Kirim log jawaban soal ke antrean Spreadsheet
+      enqueuePayload("LOG_JAWABAN", {
+        zona: zone.id,
+        nomorSoal: q.id,
+        levelKognitif: q.level,
+        jawabanSiswa: chosenText,
+        benarSalah: isCorrect ? "Benar" : "Belum Tepat",
+        jumlahPercobaan: attemptCount,
+        petunjukDipakai: activeZoneSession.questionHints[q.id] || 0
+      });
+
+      if (isCorrect) {
+        playSound("success");
+        if (attemptCount >= 2) awardBadge("pantang_menyerah");
+
+        const isLastQuiz = activeZoneSession.quizIndex >= zone.quizzes.length - 1;
+        fbArea.innerHTML = `
+          <div class="feedback-box success">
+            <strong>🌟 Strategi dan Penalaranmu Tepat!</strong>
+            <p style="color:#fff; margin:0.35rem 0 0.75rem;">${q.feedback}</p>
+            <button class="btn btn-accent" onclick="${isLastQuiz ? 'renderZoneReflection()' : 'nextQuizQuestion()'}">
+              ${isLastQuiz ? '📝 Lanjut ke Refleksi Zona ➡️' : 'Soal Berikutnya ➡️'}
+            </button>
+          </div>
+        `;
+      } else {
+        playSound("retry");
+        activeZoneSession.quizMistakes++;
+        if (gameState.energy > 1) {
+          gameState.energy--;
+          saveLocalState();
+        }
+        fbArea.innerHTML = `
+          <div class="feedback-box retry">
+            <strong>🌱 Kamu belum menemukannya, ayo coba strategi lain!</strong>
+            <p style="color:#fff; margin:0.35rem 0;">
+              Jangan khawatir, setiap percobaan membuat jalur berpikir otakmu makin kuat. Gunakan tombol <strong>Petunjuk 1/2/3</strong> di atas untuk membedah langkahnya!
+            </p>
+          </div>
+        `;
+      }
+      typesetMath();
+    }
+
+    function nextQuizQuestion() {
+      activeZoneSession.quizIndex++;
+      renderCurrentQuizQuestion();
+    }
+
+    /* ==========================================================================
+       10. REFLEKSI PEMBELAJARAN MENDALAM & GROWTH MINDSET AKHIR ZONA
+       ========================================================================== */
+    function renderZoneReflection() {
+      const zone = ZONES_DATA.find(z => z.id === activeZoneSession.zoneId);
+      const container = document.getElementById("zoneStepContent");
+
+      container.innerHTML = `
+        <h3>🌿 Refleksi Berkesadaran, Bermakna & Growth Mindset (${zone.title})</h3>
+        <p>Hebat! Seluruh rangkaian mesin di zona ini telah menyala. Luangkan 1 menit untuk memonitor pemahamanmu sendiri:</p>
+
+        <div class="form-group">
+          <label for="refConfidence">1. Seberapa yakin kamu memahami konsep di zona ini? (Skala 1–4)</label>
+          <select id="refConfidence">
+            <option value="4">4 – Sangat Yakin (Bisa menjelaskan ke teman)</option>
+            <option value="3">3 – Yakin (Paham cara kerjanya dengan baik)</option>
+            <option value="2">2 – Cukup Paham (Masih butuh melihat contoh)</option>
+            <option value="1">1 – Masih Perlu Berlatih Lagi</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="refStrategy">2. Refleksi Growth Mindset: Strategi apa yang paling membantumu di zona ini?</label>
+          <select id="refStrategy" style="margin-bottom:0.5rem;">
+            <option value="Mencoba angka di simulator mesin">Mencoba berbagai angka di simulator mesin</option>
+            <option value="Memperhatikan urutan tanda kurung f(g(x))">Memperhatikan urutan tanda kurung dari dalam ke luar</option>
+            <option value="Menggunakan petunjuk bertingkat saat terhenti">Menggunakan petunjuk bertingkat saat terhenti</option>
+            <option value="Memeriksa kembali kesalahan dengan sabar">Memeriksa kembali langkah yang keliru dengan sabar</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="refMeaningful">3. Pembelajaran Bermakna: Di mana kamu menemukan rantai proses berurutan seperti zona ini dalam kehidupanmu sehari-hari? (Tulis singkat)</label>
+          <textarea id="refMeaningful" rows="2" placeholder="Contoh: Saat mengolah bahan masakan menjadi makanan siap saji, atau menghitung diskon lalu ongkir..."></textarea>
+        </div>
+
+        <button class="btn btn-primary btn-block" onclick="finishZoneAndSave()">
+          🏆 Simpan Refleksi & Klaim Bintang Zona
+        </button>
+
+        <div class="step-nav-bar">
+          <button type="button" class="btn btn-secondary btn-sm" onclick="renderCurrentQuizQuestion()">
+            ⬅️ Kembali ke Soal Kuis Terakhir
+          </button>
+        </div>
+      `;
+    }
+
+    function finishZoneAndSave() {
+      playSound("success");
+      const zoneId = activeZoneSession.zoneId;
+      const conf = document.getElementById("refConfidence").value;
+      const strat = document.getElementById("refStrategy").value;
+      const meaning = document.getElementById("refMeaningful").value.trim() || "Rantai proses dalam keseharian";
+
+      const durationSec = Math.round((Date.now() - activeZoneSession.startTime) / 1000);
+      const mistakes = activeZoneSession.quizMistakes;
+
+      // Hitung bintang (Growth mindset: memakai petunjuk tidak menghukum bintang secara drastis)
+      let starsEarned = 3;
+      if (mistakes >= 4) starsEarned = 2;
+      const scoreEarned = Math.max(75, 100 - mistakes * 5);
+
+      const prevProg = gameState.zoneProgress[zoneId];
+      if (prevProg.completed && scoreEarned > prevProg.bestScore) {
+        awardBadge("naik_level");
+      }
+
+      prevProg.completed = true;
+      prevProg.lastStep = 1;
+      prevProg.attempts = (prevProg.attempts || 0) + 1;
+      prevProg.stars = Math.max(prevProg.stars || 0, starsEarned);
+      prevProg.bestScore = Math.max(prevProg.bestScore || 0, scoreEarned);
+      prevProg.hintsUsed = (prevProg.hintsUsed || 0) + activeZoneSession.hintsUsedInZone;
+
+      if (zoneId === gameState.unlockedZone && gameState.unlockedZone < 6) {
+        gameState.unlockedZone = zoneId + 1;
+      }
+
+      // Cek apakah semua 6 zona selesai
+      const allDone = Object.values(gameState.zoneProgress).every(z => z.completed);
+      if (allDone) {
+        gameState.waktuSelesai = new Date().toISOString();
+        awardBadge("penjaga_hulontalo");
+      }
+
+      saveLocalState();
+
+      // Kirim Progres Zona, Refleksi, dan Update Siswa ke Spreadsheet
+      enqueuePayload("UPSERT_PROGRES_ZONA", {
+        zona: zoneId,
+        jumlahPercobaan: prevProg.attempts,
+        skor: prevProg.bestScore,
+        bintang: prevProg.stars,
+        petunjukDipakai: prevProg.hintsUsed,
+        durasiDetik: durationSec,
+        status: "Selesai"
+      });
+
+      enqueuePayload("LOG_REFLEKSI", {
+        zona: zoneId,
+        tingkatKeyakinan: conf,
+        refleksiGrowthMindset: `${strat} | Konteks: ${meaning}`,
+        tanggal: new Date().toLocaleDateString("id-ID")
+      });
+
+      enqueuePayload("UPSERT_SISWA", {
+        karakter: getSelectedCharacter().name,
+        waktuMulai: gameState.waktuMulai,
+        waktuSelesai: gameState.waktuSelesai,
+        totalBintang: getTotalStars(),
+        lencana: gameState.badges.join(", ")
+      });
+
+      enterWorldMap();
+    }
+
+    /* ==========================================================================
+       11. MODAL PULIHKAN ENERGI, SERTIFIKAT & DASBOR GURU
+       ========================================================================== */
+    function openModal(title, htmlBody) {
+      document.getElementById("modalTitle").textContent = title;
+      document.getElementById("modalBody").innerHTML = htmlBody;
+      document.getElementById("customModal").style.display = "flex";
+      typesetMath();
+    }
+
+    function closeModal() {
+      document.getElementById("customModal").style.display = "none";
+    }
+
+    function restoreEnergyModal() {
+      gameState.energy = 5;
+      saveLocalState();
+      playSound("success");
+      openModal(
+        "⚡ Energi Belajar Dipulihkan Penuh (5/5)!",
+        `<p>Ingat kembali prinsip utama kita: <strong>Pada komposisi \\((f \\circ g)(x) = f(g(x))\\), fungsi yang berada di dalam kurung dikerjakan terlebih dahulu!</strong></p>
+         <p style="margin-bottom:0;">Energimu sudah penuh kembali. Teruslah bereksperimen tanpa takut salah!</p>`
+      );
+    }
+
+    function showFinalCertificate() {
+      document.getElementById("certStudentName").textContent = gameState.nama || "Penjelajah Fungsi";
+      document.getElementById("certStudentClass").textContent = `Kelas: ${gameState.kelas || "XI"} • Karakter: ${getSelectedCharacter().name}`;
+      document.getElementById("certStars").textContent = getTotalStars();
+      document.getElementById("certBadges").textContent = gameState.badges.length;
+      document.getElementById("certDate").textContent = new Date().toLocaleDateString("id-ID", {
+        day: "numeric", month: "long", year: "numeric"
+      });
+
+      const earnedNames = BADGES.filter(b => gameState.badges.includes(b.id)).map(b => `${b.icon} ${b.name}`);
+      document.getElementById("certBadgeList").textContent = earnedNames.length
+        ? "Lencana yang Diraih: " + earnedNames.join(" • ")
+        : "Telah menyelesaikan petualangan dengan penuh ketekunan.";
+
+      showScreen("screen-certificate");
+    }
+
+    function openTeacherDashboard() {
+      const statsDiv = document.getElementById("teacherStatsContent");
+      let queue = [];
+      try { queue = JSON.parse(localStorage.getItem(STORAGE_KEY_QUEUE) || "[]"); } catch (e) {}
+
+      const zoneRows = Object.entries(gameState.zoneProgress).map(([zid, zp]) => `
+        <li>Zona ${zid}: <strong>${zp.completed ? 'Selesai' : 'Belum'}</strong> | Bintang: ${zp.stars}/3 | Skor Terbaik: ${zp.bestScore} | Percobaan: ${zp.attempts}</li>
+      `).join("");
+
+      statsDiv.innerHTML = `
+        <p><strong>ID Sesi Aktif:</strong> ${gameState.sessionId}</p>
+        <p><strong>Nama Siswa di Perangkat Ini:</strong> ${gameState.nama || "-"} (${gameState.kelas || "-"})</p>
+        <p><strong>Antrean Data Belum Terkirim:</strong> ${queue.length} item</p>
+        <p><strong>URL Apps Script Terpasang:</strong> <code>${APPS_SCRIPT_URL}</code></p>
+        <hr style="border-color:var(--border); margin:0.75rem 0;" />
+        <strong>Rekap Progres Perangkat Ini:</strong>
+        <ul style="margin-left:1.25rem; margin-top:0.4rem;">${zoneRows}</ul>
+      `;
+      showScreen("screen-teacher");
+    }
+
+    function resetLocalProgressConfirm() {
+      localStorage.removeItem(STORAGE_KEY_STATE);
+      localStorage.removeItem(STORAGE_KEY_QUEUE);
+      location.reload();
+    }
+
+    /* ==========================================================================
+       INISIALISASI SAAT HALAMAN DIMUAT
+       ========================================================================== */
+    function populateStudentDropdown() {
+      const selectEl = document.getElementById("inputNama");
+      if (!selectEl) return;
+
+      const allAccounts = getAllLocalAccounts();
+      selectEl.innerHTML = `<option value="">-- Klik untuk Memilih Namamu --</option>` +
+        DAFTAR_SISWA_XI.map(nama => {
+          const accId = generateAccountId(nama);
+          const saved = allAccounts[accId];
+          const progressTag = saved
+            ? ` (Zona ${saved.unlockedZone || 1} • ⭐${Object.values(saved.zoneProgress || {}).reduce((s, z) => s + (z.stars || 0), 0)})`
+            : "";
+          return `<option value="${nama}">${nama}${progressTag}</option>`;
+        }).join("");
+    }
+
+    window.addEventListener("DOMContentLoaded", () => {
+      loadLocalState();
+      populateStudentDropdown();
+      renderSavedAccountsList();
+      if (gameState.nama) {
+        document.getElementById("inputNama").value = gameState.nama;
+      }
+      gameState.kelas = "XI";
+      updateHUD();
+      flushOfflineQueue();
+    });
+  </script>
+</body>
+</html>
